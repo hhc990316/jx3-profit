@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>剑网三魔盒 · 技艺精力收益测算</title>
+<style>
+:root {
+  --bg: #f5f6f8;
+  --card: #ffffff;
+  --text: #1a1a1a;
+  --text-2: #6b7280;
+  --text-3: #9ca3af;
+  --border: #e5e7eb;
+  --up: #d9272e;
+  --down: #16a34a;
+  --accent: #1e6fd9;
+  --accent-bg: #eef4fd;
+  --warn: #b45309;
+  --warn-bg: #fef3e2;
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+.container { max-width: 1080px; margin: 0 auto; padding: 16px; }
+
+/* 头部 */
+.header { padding: 20px 4px 8px; }
+.header h1 { font-size: 20px; font-weight: 600; }
+.header .sub { color: var(--text-2); font-size: 13px; margin-top: 4px; }
+.badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.badge {
+  font-size: 12px; color: var(--text-2);
+  background: var(--card); border: 1px solid var(--border);
+  padding: 3px 10px; border-radius: 20px;
+}
+
+/* 面板卡片 */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; margin-bottom: 16px;
+}
+.card h2 { font-size: 15px; font-weight: 600; margin-bottom: 12px; }
+
+/* 等级输入区 */
+.craft-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.craft-input {
+  border: 1px solid var(--border); border-radius: 10px; padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.craft-input .craft-name { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 6px; }
+.craft-input .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.craft-input input[type=number] {
+  width: 100%; padding: 8px 10px; font-size: 16px;
+  border: 1px solid var(--border); border-radius: 8px; outline: none;
+}
+.craft-input input[type=number]:focus { border-color: var(--accent); }
+.craft-input label.switch {
+  display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-2); cursor: pointer;
+}
+.craft-input input[type=checkbox] { accent-color: var(--accent); width: 15px; height: 15px; }
+
+/* 控制按钮行 */
+.controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 12px; }
+.btn {
+  padding: 8px 16px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); cursor: pointer; font-size: 13px; color: var(--text);
+  transition: all .15s;
+}
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+select.filter {
+  padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border);
+  background: var(--card); font-size: 13px; outline: none;
+}
+
+/* 统计卡 */
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 16px; }
+.metric { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 14px; }
+.metric .label { font-size: 12px; color: var(--text-2); }
+.metric .value { font-size: 22px; font-weight: 600; margin-top: 2px; }
+.metric .unit { font-size: 12px; color: var(--text-3); }
+
+/* 收益榜列表 */
+.rank-list { display: flex; flex-direction: column; gap: 8px; }
+.rank-item {
+  border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+  background: var(--card); cursor: pointer; transition: box-shadow .15s;
+}
+.rank-item:hover { box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.rank-item .top { display: flex; align-items: center; gap: 10px; }
+.rank-num {
+  width: 26px; height: 26px; border-radius: 6px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; background: var(--bg); color: var(--text-2);
+}
+.rank-num.top1 { background: #fef3e2; color: #b45309; }
+.rank-num.top2 { background: #f1f5f9; color: #475569; }
+.rank-num.top3 { background: #fef2f2; color: #b91c1c; }
+.rank-item .name { font-weight: 600; font-size: 14px; flex: 1; }
+.rank-item .craft-tag {
+  font-size: 11px; padding: 2px 8px; border-radius: 4px; flex-shrink: 0;
+}
+.rank-item .profit { text-align: right; }
+.rank-item .profit .big { font-size: 16px; font-weight: 600; }
+.rank-item .profit .small { font-size: 11px; color: var(--text-3); }
+.pos { color: var(--up); }
+.neg { color: var(--down); }
+
+.rank-item .meta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 8px; font-size: 12px; color: var(--text-2); }
+.rank-item .meta .liq-good { color: var(--down); }
+.rank-item .meta .liq-mid { color: var(--warn); }
+.rank-item .meta .liq-bad { color: var(--up); }
+.liq-tag { font-size: 11px; padding: 1px 6px; border-radius: 4px; }
+.liq-good { background: #eaf7ef; color: #16a34a; }
+.liq-mid { background: #fef3e2; color: #b45309; }
+.liq-bad { background: #fdeaea; color: #d9272e; }
+
+/* 展开详情 */
+.detail {
+  margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--border);
+  display: none;
+}
+.detail.open { display: block; }
+.detail h4 { font-size: 12px; color: var(--text-2); margin: 10px 0 6px; }
+.detail table { width: 100%; border-collapse: collapse; font-size: 12px; }
+.detail th, .detail td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
+.detail th { color: var(--text-3); font-weight: 400; }
+.detail td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.detail .summary { font-size: 13px; color: var(--text-2); }
+
+/* 提示 */
+.tip { font-size: 12px; color: var(--text-3); margin-top: 8px; }
+.empty { text-align: center; color: var(--text-3); padding: 40px 0; }
+
+/* 分类筛选按钮 */
+.craft-filter { display: flex; flex-wrap: wrap; gap: 8px; }
+
+@media (max-width: 600px) {
+  .rank-item .meta { gap: 8px; }
+  .container { padding: 10px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="header">
+    <h1>剑网三魔盒 · 技艺精力收益测算</h1>
+    <div class="sub">输入你的技艺等级，看看做什么最赚精力</div>
+    <div class="badge-row" id="badgeRow"></div>
+  </div>
+
+  <div class="card">
+    <h2>你的技艺等级</h2>
+    <div class="craft-inputs" id="craftInputs"></div>
+    <div class="tip">专精：勾选表示该号已学习该技艺专精，可制作需要专精的配方。等级填你实际拥有的技艺等级，低于该等级的配方会被过滤掉。</div>
+  </div>
+
+  <div class="card">
+    <h2>筛选与排序</h2>
+    <div class="controls">
+      <div class="craft-filter" id="craftFilter"></div>
+    </div>
+    <div class="controls" style="margin-top:10px;">
+      <select class="filter" id="sortBy">
+        <option value="profit_per_energy">按每点精力净利排序</option>
+        <option value="profit">按单次净利排序</option>
+        <option value="liquidity">按流动性排序</option>
+      </select>
+      <select class="filter" id="liqFilter">
+        <option value="all">全部流动性</option>
+        <option value="good">只看流动性好</option>
+        <option value="ok">只看流动性中等以上</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="metrics" id="metrics"></div>
+
+  <div class="card">
+    <h2 id="rankTitle">收益榜</h2>
+    <div class="rank-list" id="rankList"></div>
+  </div>
+</div>
+
+<script>
+const CRAFT_COLORS = {
+  cooking: '#16a34a',
+  medicine: '#1e6fd9',
+  tailoring: '#d9272e',
+  founding: '#b45309',
+  furniture: '#7c3aed',
+};
+const CRAFT_NAMES = {
+  cooking: '烹饪', medicine: '制药', tailoring: '缝纫',
+  founding: '锻造', furniture: '梓匠',
+};
+const CRAFT_KEYS = ['cooking', 'medicine', 'tailoring', 'founding', 'furniture'];
+
+let DATA = null;
+let state = {
+  levels: { cooking: 0, medicine: 0, tailoring: 0, founding: 0, furniture: 0 },
+  expertise: { cooking: false, medicine: false, tailoring: false, founding: false, furniture: false },
+  craftFilter: 'all',
+  sortBy: 'profit_per_energy',
+  liqFilter: 'all',
+};
+
+function fmtJin(v) {
+  // v 单位是万分之一金，转换为金
+  const jin = v / 10000;
+  if (jin >= 10000) return (jin / 10000).toFixed(2) + '万';
+  if (jin >= 1) return jin.toFixed(2);
+  return jin.toFixed(4);
+}
+function fmtJin2(v) {
+  const jin = v / 10000;
+  return jin.toFixed(2);
+}
+
+function liquidityTag(count) {
+  if (count >= 500) return { text: '充足', cls: 'liq-good' };
+  if (count >= 50) return { text: '一般', cls: 'liq-mid' };
+  return { text: '稀少', cls: 'liq-bad' };
+}
+
+function renderBadges() {
+  if (!DATA) return;
+  const el = document.getElementById('badgeRow');
+  const t = new Date(DATA.generated_at * 1000);
+  const timeStr = `${t.getMonth()+1}月${t.getDate()}日 ${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
+  el.innerHTML = '';
+  const badges = [
+    `区服：${DATA.server}`,
+    `更新时间：${timeStr}`,
+    `可计算配方：${DATA.recipes.length} 个`,
+    `手续费：${(DATA.fee_rate*100).toFixed(0)}%`,
+  ];
+  badges.forEach(b => {
+    const span = document.createElement('span');
+    span.className = 'badge';
+    span.textContent = b;
+    el.appendChild(span);
+  });
+}
+
+function renderCraftInputs() {
+  const el = document.getElementById('craftInputs');
+  el.innerHTML = '';
+  CRAFT_KEYS.forEach(key => {
+    const div = document.createElement('div');
+    div.className = 'craft-input';
+    const color = CRAFT_COLORS[key];
+    div.innerHTML = `
+      <div class="craft-name"><span class="dot" style="background:${color}"></span>${CRAFT_NAMES[key]}</div>
+      <input type="number" min="0" max="50" placeholder="等级" data-key="${key}" value="${state.levels[key] || ''}">
+      <label class="switch">
+        <input type="checkbox" data-exp="${key}" ${state.expertise[key] ? 'checked' : ''}>
+        <span>专精</span>
+      </label>
+    `;
+    el.appendChild(div);
+  });
+
+  el.querySelectorAll('input[type=number]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const key = inp.dataset.key;
+      state.levels[key] = parseInt(inp.value) || 0;
+      update();
+    });
+  });
+  el.querySelectorAll('input[type=checkbox]').forEach(cb => {
+    cb.addEventListener('change', () => {
+      const key = cb.dataset.exp;
+      state.expertise[key] = cb.checked;
+      update();
+    });
+  });
+}
+
+function renderCraftFilter() {
+  const el = document.getElementById('craftFilter');
+  el.innerHTML = '';
+  const opts = [
+    { key: 'all', name: '全部' },
+    ...CRAFT_KEYS.map(k => ({ key: k, name: CRAFT_NAMES[k] })),
+  ];
+  opts.forEach(o => {
+    const btn = document.createElement('button');
+    btn.className = 'btn' + (state.craftFilter === o.key ? ' active' : '');
+    btn.textContent = o.name;
+    btn.addEventListener('click', () => {
+      state.craftFilter = o.key;
+      renderCraftFilter();
+      update();
+    });
+    el.appendChild(btn);
+  });
+}
+
+function filterRecipes() {
+  if (!DATA) return [];
+  const rows = DATA.recipes.filter(r => {
+    // 等级过滤
+    const lvl = r.require_level || 0;
+    if (lvl > (state.levels[r.craft] || 0)) return false;
+    // 专精过滤
+    if (r.need_expertise && !state.expertise[r.craft]) return false;
+    // 分类过滤
+    if (state.craftFilter !== 'all' && r.craft !== state.craftFilter) return false;
+    // 流动性过滤
+    if (state.liqFilter === 'good' && r.liquidity < 500) return false;
+    if (state.liqFilter === 'ok' && r.liquidity < 50) return false;
+    return true;
+  });
+
+  const sortKey = state.sortBy;
+  rows.sort((a, b) => b[sortKey] - a[sortKey]);
+  return rows;
+}
+
+function renderMetrics(rows) {
+  const el = document.getElementById('metrics');
+  if (rows.length === 0) {
+    el.innerHTML = '';
+    return;
+  }
+  const pos = rows.filter(r => r.profit > 0).length;
+  const top = rows[0];
+  const avg = rows.reduce((s, r) => s + r.profit_per_energy, 0) / rows.length;
+  el.innerHTML = `
+    <div class="metric"><div class="label">可做配方</div><div class="value">${rows.length}</div><div class="unit">个</div></div>
+    <div class="metric"><div class="label">正收益</div><div class="value">${pos}</div><div class="unit">个</div></div>
+    <div class="metric"><div class="label">最优配方</div><div class="value" style="font-size:16px">${top.name}</div><div class="unit">${fmtJin2(top.profit_per_energy)} 金/精力</div></div>
+    <div class="metric"><div class="label">平均每精力净利</div><div class="value">${fmtJin2(avg)}</div><div class="unit">金</div></div>
+  `;
+}
+
+function renderList(rows) {
+  const el = document.getElementById('rankList');
+  const title = document.getElementById('rankTitle');
+  if (rows.length === 0) {
+    title.textContent = '收益榜（无匹配配方）';
+    el.innerHTML = '<div class="empty">没有符合当前等级的配方，试试提高等级或切换分类</div>';
+    return;
+  }
+  title.textContent = `收益榜（共 ${rows.length} 个可做配方）`;
+  el.innerHTML = '';
+  rows.slice(0, 200).forEach((r, i) => {
+    const liq = liquidityTag(r.liquidity);
+    const isPos = r.profit >= 0;
+    const div = document.createElement('div');
+    div.className = 'rank-item';
+    const rankCls = i === 0 ? 'top1' : i === 1 ? 'top2' : i === 2 ? 'top3' : '';
+    div.innerHTML = `
+      <div class="top">
+        <div class="rank-num ${rankCls}">${i+1}</div>
+        <div class="name">${r.name}</div>
+        <div class="craft-tag" style="background:${CRAFT_COLORS[r.craft]}18;color:${CRAFT_COLORS[r.craft]}">${r.craft_name}</div>
+        <div class="profit">
+          <div class="big ${isPos ? 'pos' : 'neg'}">${isPos ? '+' : ''}${fmtJin2(r.profit_per_energy)}</div>
+          <div class="small">金/精力</div>
+        </div>
+      </div>
+      <div class="meta">
+        <span>需等级 ${r.require_level || '-'}</span>
+        ${r.need_expertise ? '<span>需专精</span>' : ''}
+        <span>消耗精力 ${r.energy}</span>
+        <span>单次净利 ${r.profit >= 0 ? '+' : ''}${fmtJin2(r.profit)} 金</span>
+        <span class="${liq.cls}">流动性 ${liq.text}</span>
+      </div>
+      <div class="detail" data-id="${i}"></div>
+    `;
+    div.querySelector('.top').addEventListener('click', () => toggleDetail(div, r, i));
+    el.appendChild(div);
+  });
+}
+
+function toggleDetail(container, r, i) {
+  const detail = container.querySelector('.detail');
+  if (detail.classList.contains('open')) {
+    detail.classList.remove('open');
+    return;
+  }
+  detail.classList.add('open');
+  if (detail.innerHTML) return;
+
+  let matHtml = '';
+  r.materials.forEach(m => {
+    matHtml += `<tr><td>${m.name}</td><td class="num">${m.count}</td><td class="num">${fmtJin(m.unit_price)}</td><td class="num">${fmtJin(m.cost)}</td></tr>`;
+  });
+  let outHtml = '';
+  r.outputs.forEach(o => {
+    outHtml += `<tr><td>${o.name}</td><td class="num">${o.min}~${o.max}</td><td class="num">${fmtJin(o.unit_price)}</td><td class="num">${fmtJin(o.revenue)}</td></tr>`;
+  });
+
+  detail.innerHTML = `
+    <div class="summary">
+      材料成本 <b>${fmtJin2(r.material_cost)}</b> 金 · 成品产值 <b>${fmtJin2(r.expected_revenue)}</b> 金 · 
+      扣手续费后净利 <b>${fmtJin2(r.net_revenue)}</b> 金
+    </div>
+    <h4>材料（${r.materials.length} 种）</h4>
+    <table><thead><tr><th>材料</th><th>数量</th><th>单价</th><th>小计</th></tr></thead><tbody>${matHtml}</tbody></table>
+    <h4>产出（${r.outputs.length} 种）</h4>
+    <table><thead><tr><th>成品</th><th>产出数量</th><th>单价</th><th>小计</th></tr></thead><tbody>${outHtml}</tbody></table>
+  `;
+}
+
+function update() {
+  const rows = filterRecipes();
+  renderMetrics(rows);
+  renderList(rows);
+}
+
+function init() {
+  document.getElementById('sortBy').addEventListener('change', e => {
+    state.sortBy = e.target.value;
+    update();
+  });
+  document.getElementById('liqFilter').addEventListener('change', e => {
+    state.liqFilter = e.target.value;
+    update();
+  });
+}
+
+fetch('recipe_data.json').then(res => res.json()).then(data => {
+  DATA = data;
+  renderBadges();
+  renderCraftInputs();
+  renderCraftFilter();
+  init();
+  update();
+}).catch(err => {
+  document.getElementById('rankList').innerHTML = '<div class="empty">数据加载失败，请稍后刷新重试</div>';
+});
+</script>
+</body>
+</html>
