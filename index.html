@@ -289,6 +289,17 @@ select.filter {
 }
 .source-note a { color: var(--ink-2); }
 
+/* 版本待更新警示条 */
+.version-warning {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-bottom: 16px; padding: 12px 14px;
+  border: 1px solid var(--cinnabar); border-left: 4px solid var(--cinnabar);
+  border-radius: 10px; background: rgba(176, 74, 58, 0.06);
+  color: var(--text-1); font-size: 13px; line-height: 1.6;
+}
+.version-warning strong { color: var(--cinnabar); font-size: 13px; letter-spacing: 1px; }
+.version-warning b { color: var(--cinnabar); }
+
 /* 采集收益 */
 .gather-list { display: flex; flex-direction: column; gap: 12px; }
 .gather-card {
@@ -543,6 +554,10 @@ select.filter {
   </section>
 
   <section class="mode-panel" id="chestPanel" aria-labelledby="chestTab" hidden>
+    <div class="version-warning" role="alert">
+      <strong>⚠ 数据待更新</strong>
+      <span>以下掉落概率为 <b>2022 年玩家实测</b>，尚未在「苍生铸世」版本重新验证；版本材料体系已重塑，各材料当前价格与用途可能已变化。结果仅供参考，请结合自己区服实际核对后再开箱。</span>
+    </div>
     <div class="card">
       <div class="card-head">
         <div>
@@ -1045,7 +1060,8 @@ function renderChestSource(chest) {
   const url = source.url || '#';
   document.getElementById('chestSourceNote').innerHTML =
     `概率来源：<a href="${url}" target="_blank" rel="noopener noreferrer">魔盒《${source.title || '宝箱开材料数据分享'}》</a>` +
-    `（${source.collected_at || '历史'}实测，${source.published_at || '近期'}分享）。` +
+    `（${source.collected_at || '2022'} 年实测，${source.published_at || '近期'}分享）。` +
+    `<b>此表为 2022 年数据，苍生铸世版本尚未重新验证，材料价格与用途可能已变化，仅供参考。</b>` +
     `当前选择「材料」分支，不含书籍、秘籍、五行石；材料卖出已扣 ${(DATA.fee_rate * 100).toFixed(0)}% 手续费。` +
     (chest.key === 'iron' ? '精铁样本仅 2,718 箱，明显少于另外两种，误差会更大。' : '青铜与锡制样本较大，概率参考更稳定。') +
     '期望收益是长期均值，不代表少量开箱必赚。';
