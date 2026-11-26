@@ -174,6 +174,116 @@ select.filter {
   background: var(--card-2); font-size: 13px; outline: none; color: var(--text);
 }
 
+/* 测算类型页签 */
+.mode-tabs {
+  display: flex; gap: 8px; margin: 2px 8px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.mode-tab {
+  appearance: none; border: 0; border-bottom: 2px solid transparent;
+  background: transparent; color: var(--text-2); cursor: pointer;
+  min-height: 44px; padding: 8px 18px 10px;
+  font-size: 14px; font-weight: 600; letter-spacing: 2px;
+  transition: color .18s ease, border-color .18s ease, transform .18s ease;
+}
+.mode-tab:hover { color: var(--ink); transform: translateY(-1px); }
+.mode-tab.active { color: var(--ink); border-bottom-color: var(--cinnabar); }
+.mode-tab:focus-visible, .chest-option:focus-visible, .btn:focus-visible, input:focus-visible {
+  outline: 2px solid var(--cinnabar); outline-offset: 2px;
+}
+.mode-panel[hidden] { display: none; }
+
+/* 开箱账本 */
+.card-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 14px;
+  margin-bottom: 16px;
+}
+.card-head h2 { margin-bottom: 3px; }
+.sample-pill {
+  flex-shrink: 0; align-self: center; padding: 4px 10px; border-radius: 999px;
+  background: var(--accent-bg); color: var(--text-2); font-size: 11px; letter-spacing: 1px;
+  font-variant-numeric: tabular-nums;
+}
+.chest-switch { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.chest-option {
+  position: relative; min-height: 74px; padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 12px;
+  background: var(--card-2); cursor: pointer; text-align: left;
+  transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+}
+.chest-option:hover { transform: translateY(-1px); box-shadow: var(--shadow-hover); }
+.chest-option.active { border-color: var(--ink-2); box-shadow: inset 0 0 0 1px var(--ink-2), var(--shadow); }
+.chest-option .name { display: flex; align-items: center; gap: 8px; color: var(--ink); font-weight: 700; letter-spacing: 1px; }
+.chest-option .name::before {
+  content: ""; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--chest-color, var(--ink-3));
+}
+.chest-option .meta { margin-top: 6px; color: var(--text-2); font-size: 12px; font-variant-numeric: tabular-nums; }
+.chest-cost-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(140px, 1fr)); gap: 12px;
+  margin-top: 18px; align-items: end;
+}
+.cost-field { display: flex; flex-direction: column; gap: 6px; }
+.cost-field > span { color: var(--text-2); font-size: 12px; letter-spacing: 1px; }
+.cost-input {
+  display: flex; align-items: center; overflow: hidden;
+  border: 1px solid var(--border); border-radius: 10px; background: var(--card-2);
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+.cost-input:focus-within { border-color: var(--ink-3); box-shadow: 0 0 0 3px var(--accent-bg); }
+.cost-input input {
+  width: 100%; min-height: 44px; border: 0; outline: none; background: transparent;
+  padding: 10px 8px 10px 12px; color: var(--text); font-size: 15px;
+  font-variant-numeric: tabular-nums;
+}
+.cost-input span { padding: 0 12px 0 2px; color: var(--text-3); font-size: 12px; }
+.cost-field small { min-height: 17px; color: var(--text-3); font-size: 11px; font-variant-numeric: tabular-nums; }
+.chest-metrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.chest-metric {
+  padding: 14px 15px; border: 1px solid var(--border); border-radius: 12px;
+  background: linear-gradient(180deg, var(--card-2), var(--card));
+}
+.chest-metric .label { color: var(--text-2); font-size: 11px; letter-spacing: 1px; }
+.chest-metric .value { margin-top: 4px; font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.chest-metric .unit { margin-left: 3px; color: var(--text-3); font-size: 11px; font-weight: 400; }
+.chest-metric .hint { margin-top: 3px; color: var(--text-3); font-size: 11px; }
+
+/* 宝箱横向对比 */
+.chest-compare { display: flex; flex-direction: column; gap: 8px; }
+.chest-compare-row {
+  display: grid; grid-template-columns: 1.25fr .9fr .9fr .9fr; gap: 10px; align-items: center;
+  padding: 10px 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--card-2);
+  font-variant-numeric: tabular-nums;
+}
+.chest-compare-row.head { background: transparent; border-style: dashed; color: var(--text-3); font-size: 11px; letter-spacing: 1px; }
+.chest-compare-row.selected { border-color: var(--border-strong); box-shadow: inset 3px 0 0 var(--cinnabar); }
+.chest-compare-row .num { text-align: right; }
+.craft-compare {
+  margin-top: 12px; padding: 10px 12px; border-left: 2px solid var(--ink-3);
+  color: var(--text-2); font-size: 12px; background: rgba(61,61,58,.035);
+}
+
+/* 掉落期望明细 */
+.drop-details summary {
+  min-height: 44px; display: flex; align-items: center; cursor: pointer;
+  color: var(--ink); font-weight: 700; letter-spacing: 1px; list-style-position: inside;
+}
+.drop-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 10px; }
+.drop-table { width: 100%; min-width: 620px; border-collapse: collapse; font-size: 12px; background: var(--card-2); }
+.drop-table th, .drop-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: left; }
+.drop-table th { color: var(--text-3); font-weight: 500; letter-spacing: 1px; }
+.drop-table td.num { text-align: right; font-variant-numeric: tabular-nums; }
+.drop-table tr:last-child td { border-bottom: 0; }
+.quality-tag { display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 11px; }
+.quality-green { color: #667f61; background: #edf1e9; }
+.quality-blue { color: #64798c; background: #edf1f3; }
+.quality-purple { color: #756482; background: #f1edf2; }
+.source-note {
+  margin-top: 12px; padding: 10px 12px; border: 1px dashed var(--border-strong); border-radius: 9px;
+  color: var(--text-2); font-size: 12px; line-height: 1.7;
+}
+.source-note a { color: var(--ink-2); }
+
 /* 统计卡 */
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 20px; }
 .metric {
@@ -268,10 +378,21 @@ select.filter {
 .card:nth-of-type(3) { animation-delay: 160ms; }
 .metrics { animation-delay: 200ms; }
 
+@media (max-width: 760px) {
+  .chest-switch { grid-template-columns: 1fr; }
+  .chest-cost-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .chest-metrics { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
 @media (max-width: 600px) {
   .rank-item .meta { gap: 8px; }
   .container { padding: 12px; }
   .header h1 { font-size: 22px; }
+  .mode-tabs { margin: 0 0 14px; }
+  .mode-tab { flex: 1; padding-inline: 8px; }
+  .chest-cost-grid, .chest-metrics { grid-template-columns: 1fr; }
+  .chest-compare-row { grid-template-columns: 1.2fr .8fr .8fr; }
+  .chest-compare-row > :nth-child(4) { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -320,6 +441,13 @@ select.filter {
     <div class="badge-row" id="badgeRow"></div>
   </div>
 
+  <nav class="mode-tabs" aria-label="收益测算类型">
+    <button type="button" class="mode-tab active" id="craftTab" data-mode="craft" aria-selected="true" aria-controls="craftPanel">技艺收益</button>
+    <button type="button" class="mode-tab" id="chestTab" data-mode="chest" aria-selected="false" aria-controls="chestPanel">宝箱测算</button>
+  </nav>
+
+  <main>
+  <section class="mode-panel" id="craftPanel" aria-labelledby="craftTab">
   <div class="card">
     <h2>你的技艺等级</h2>
     <div class="craft-inputs" id="craftInputs"></div>
@@ -361,6 +489,62 @@ select.filter {
     <h2 id="rankTitle">收益榜</h2>
     <div class="rank-list" id="rankList"></div>
   </div>
+  </section>
+
+  <section class="mode-panel" id="chestPanel" aria-labelledby="chestTab" hidden>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>开箱账本</h2>
+          <div class="tip" id="chestFormula">单箱净利 = 材料期望产值 × 95% − 宝箱价 − 钥匙价</div>
+        </div>
+        <span class="sample-pill" id="chestSample"></span>
+      </div>
+
+      <div class="chest-switch" id="chestSwitch" role="tablist" aria-label="选择宝箱类型"></div>
+
+      <div class="chest-cost-grid">
+        <label class="cost-field">
+          <span>宝箱单价</span>
+          <div class="cost-input"><input type="number" id="chestPrice" min="0" step="0.01" inputmode="decimal"><span>金</span></div>
+          <small id="chestMarket"></small>
+        </label>
+        <label class="cost-field">
+          <span id="keyPriceLabel">钥匙单价</span>
+          <div class="cost-input"><input type="number" id="keyPrice" min="0" step="0.01" inputmode="decimal"><span>金</span></div>
+          <small id="keyMarket"></small>
+        </label>
+        <label class="cost-field">
+          <span>计划开箱</span>
+          <div class="cost-input"><input type="number" id="openCount" min="1" max="9999" step="1" value="20" inputmode="numeric"><span>箱</span></div>
+          <small>按长期期望估算总账</small>
+        </label>
+        <button type="button" class="btn" id="resetChestPrice">恢复实时价</button>
+      </div>
+
+      <div class="chest-metrics" id="chestMetrics"></div>
+    </div>
+
+    <div class="card">
+      <h2>三种宝箱横向比</h2>
+      <div class="chest-compare" id="chestCompare"></div>
+      <div class="craft-compare" id="craftCompare"></div>
+    </div>
+
+    <div class="card">
+      <details class="drop-details">
+        <summary>单箱掉落期望明细</summary>
+        <div class="drop-table-wrap">
+          <table class="drop-table">
+            <thead><tr><th>材料</th><th>品质</th><th>实测概率</th><th>当前单价</th><th>税后期望贡献</th></tr></thead>
+            <tbody id="dropRows"></tbody>
+          </table>
+        </div>
+      </details>
+      <div class="source-note" id="chestSourceNote"></div>
+    </div>
+  </section>
+  </main>
 </div>
 
 <script>
@@ -384,6 +568,11 @@ const CRAFT_ICONS = {
   furniture: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M12 4v16M4 12h16"/></svg>`,
 };
 const CRAFT_KEYS = ['cooking', 'medicine', 'tailoring', 'founding', 'furniture'];
+const CHEST_COLORS = {
+  bronze: '#8a6a5c',
+  tin: '#6b7f8e',
+  iron: '#3d3d3a',
+};
 
 let DATA = null;
 let state = {
@@ -392,6 +581,9 @@ let state = {
   craftFilter: 'all',
   sortBy: 'profit_per_energy',
   liqFilter: 'all',
+  mode: 'craft',
+  chestKey: 'bronze',
+  chestCosts: {},
 };
 
 function fmtJin(v) {
@@ -404,6 +596,23 @@ function fmtJin(v) {
 function fmtJin2(v) {
   const jin = v / 10000;
   return jin.toFixed(2);
+}
+function fmtJin4(v) {
+  const jin = v / 10000;
+  return jin >= 100 ? jin.toFixed(2) : jin.toFixed(4).replace(/0+$/, '').replace(/\.$/, '');
+}
+function fmtSignedJin(v) {
+  return (v >= 0 ? '+' : '') + fmtJin2(v);
+}
+function fmtPercent(v) {
+  return (v * 100).toFixed(2) + '%';
+}
+function formatCount(n) {
+  if (n >= 10000) return (n / 10000).toFixed(1) + '万';
+  return String(n);
+}
+function profitClass(v) {
+  return v >= 0 ? 'pos' : 'neg';
 }
 
 function liquidityTag(count) {
@@ -422,6 +631,7 @@ function renderBadges() {
     `区服：${DATA.server}`,
     `更新时间：${timeStr}`,
     `可计算配方：${DATA.recipes.length} 个`,
+    `可测算宝箱：${(DATA.chests || []).length} 种`,
     `手续费：${(DATA.fee_rate*100).toFixed(0)}%`,
   ];
   badges.forEach(b => {
@@ -598,10 +808,231 @@ function toggleDetail(container, r, i) {
   `;
 }
 
+function getChests() {
+  return (DATA && DATA.chests) ? DATA.chests : [];
+}
+function selectedChest() {
+  const chests = getChests();
+  return chests.find(c => c.key === state.chestKey) || chests[0];
+}
+function marketCosts(chest) {
+  return {
+    chest: chest.chest_price / 10000,
+    key: chest.key_price / 10000,
+  };
+}
+function initChestState() {
+  getChests().forEach(chest => {
+    if (!state.chestCosts[chest.key]) state.chestCosts[chest.key] = marketCosts(chest);
+  });
+}
+function renderChestSwitch() {
+  const el = document.getElementById('chestSwitch');
+  el.innerHTML = '';
+  getChests().forEach(chest => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'chest-option' + (chest.key === state.chestKey ? ' active' : '');
+    btn.style.setProperty('--chest-color', CHEST_COLORS[chest.key] || '#6f6e68');
+    btn.setAttribute('role', 'tab');
+    btn.setAttribute('aria-selected', chest.key === state.chestKey ? 'true' : 'false');
+    btn.innerHTML = `
+      <div class="name">${chest.name}</div>
+      <div class="meta">消耗 ${chest.energy} 精力 · 实测 ${formatCount(chest.sample)} 箱</div>
+    `;
+    btn.addEventListener('click', () => {
+      if (state.chestKey === chest.key) return;
+      state.chestKey = chest.key;
+      renderChestSwitch();
+      syncChestInputs();
+      updateChest();
+    });
+    el.appendChild(btn);
+  });
+}
+function syncChestInputs() {
+  const chest = selectedChest();
+  if (!chest) return;
+  const costs = state.chestCosts[chest.key] || marketCosts(chest);
+  document.getElementById('chestPrice').value = Number(costs.chest.toFixed(4)).toString();
+  document.getElementById('keyPrice').value = Number(costs.key.toFixed(4)).toString();
+  document.getElementById('keyPriceLabel').textContent = `${chest.key_name}单价`;
+  document.getElementById('chestSample').textContent = `样本 ${formatCount(chest.sample)} · ${chest.energy} 精力/箱`;
+  document.getElementById('chestMarket').textContent =
+    `最低 ${fmtJin4(chest.chest_price)} 金 · 挂单 ${formatCount(chest.chest_liquidity)}`;
+  document.getElementById('keyMarket').textContent =
+    `最低 ${fmtJin4(chest.key_price)} 金 · 挂单 ${formatCount(chest.key_liquidity)}`;
+}
+function readChestInputs() {
+  const chest = selectedChest();
+  if (!chest) return;
+  const chestPrice = parseFloat(document.getElementById('chestPrice').value);
+  const keyPrice = parseFloat(document.getElementById('keyPrice').value);
+  state.chestCosts[chest.key] = {
+    chest: Number.isFinite(chestPrice) && chestPrice >= 0 ? chestPrice : 0,
+    key: Number.isFinite(keyPrice) && keyPrice >= 0 ? keyPrice : 0,
+  };
+}
+function calculateChest(chest) {
+  const costs = state.chestCosts[chest.key] || marketCosts(chest);
+  const cost = (costs.chest + costs.key) * 10000;
+  const profit = chest.net_revenue - cost;
+  return {
+    chest,
+    costs,
+    cost,
+    profit,
+    profitPerEnergy: profit / chest.energy,
+    breakEvenTotal: chest.net_revenue,
+    breakEvenChest: chest.net_revenue - costs.key * 10000,
+  };
+}
+function calculateAllChests() {
+  return getChests().map(calculateChest);
+}
+function renderChestMetrics(calc) {
+  const el = document.getElementById('chestMetrics');
+  const count = Math.max(1, parseInt(document.getElementById('openCount').value, 10) || 1);
+  const totalProfit = calc.profit * count;
+  el.innerHTML = `
+    <div class="chest-metric">
+      <div class="label">税后材料产值</div>
+      <div class="value">${fmtJin2(calc.chest.net_revenue)}<span class="unit">金/箱</span></div>
+      <div class="hint">按当前材料价与实测概率</div>
+    </div>
+    <div class="chest-metric">
+      <div class="label">单箱期望净利</div>
+      <div class="value ${profitClass(calc.profit)}">${fmtSignedJin(calc.profit)}<span class="unit">金</span></div>
+      <div class="hint">箱 ${calc.costs.chest.toFixed(2)} 金 · 钥匙 ${calc.costs.key.toFixed(2)} 金</div>
+    </div>
+    <div class="chest-metric">
+      <div class="label">每点精力期望</div>
+      <div class="value ${profitClass(calc.profitPerEnergy)}">${fmtSignedJin(calc.profitPerEnergy)}<span class="unit">金</span></div>
+      <div class="hint">每箱消耗 ${calc.chest.energy} 点</div>
+    </div>
+    <div class="chest-metric">
+      <div class="label">${count} 箱期望总净利</div>
+      <div class="value ${profitClass(totalProfit)}">${fmtSignedJin(totalProfit)}<span class="unit">金</span></div>
+      <div class="hint">长期均值，短期有欧非波动</div>
+    </div>
+    <div class="chest-metric">
+      <div class="label">回本箱匙总价</div>
+      <div class="value">${fmtJin2(calc.breakEvenTotal)}<span class="unit">金</span></div>
+      <div class="hint">当前钥匙价下，宝箱 ≤ ${fmtJin2(calc.breakEvenChest)} 金</div>
+    </div>
+  `;
+}
+function renderChestCompare(calculations) {
+  const el = document.getElementById('chestCompare');
+  const rows = [...calculations].sort((a, b) => b.profitPerEnergy - a.profitPerEnergy);
+  el.innerHTML = `
+    <div class="chest-compare-row head">
+      <div>宝箱</div><div class="num">单箱净利</div><div class="num">净利/精力</div><div class="num">回本总价</div>
+    </div>
+  `;
+  rows.forEach(calc => {
+    const row = document.createElement('div');
+    row.className = 'chest-compare-row' + (calc.chest.key === state.chestKey ? ' selected' : '');
+    row.innerHTML = `
+      <div>${calc.chest.name}</div>
+      <div class="num ${profitClass(calc.profit)}">${fmtSignedJin(calc.profit)} 金</div>
+      <div class="num ${profitClass(calc.profitPerEnergy)}">${fmtSignedJin(calc.profitPerEnergy)} 金</div>
+      <div class="num">${fmtJin2(calc.breakEvenTotal)} 金</div>
+    `;
+    row.addEventListener('click', () => {
+      if (state.chestKey === calc.chest.key) return;
+      state.chestKey = calc.chest.key;
+      renderChestSwitch();
+      syncChestInputs();
+      updateChest();
+    });
+    el.appendChild(row);
+  });
+}
+function renderCraftCompare(bestChest) {
+  const el = document.getElementById('craftCompare');
+  const rows = filterRecipes();
+  if (!rows.length) {
+    el.textContent = '填好技艺等级后，这里会直接对比「最优手艺」和当前宝箱的每点精力收益。';
+    return;
+  }
+  const top = rows[0];
+  const diff = bestChest.profitPerEnergy - top.profit_per_energy;
+  const relation = diff >= 0 ? `高 ${fmtJin2(diff)}` : `低 ${fmtJin2(Math.abs(diff))}`;
+  el.innerHTML = `当前最优手艺：<b>${top.name}</b>（${fmtJin2(top.profit_per_energy)} 金/精力）；
+    所选宝箱每点精力比它${relation} 金。`;
+}
+function renderDropTable(chest) {
+  const el = document.getElementById('dropRows');
+  const fee = 1 - (DATA.fee_rate || 0);
+  el.innerHTML = chest.drops.map(d => `
+    <tr>
+      <td>${d.name}</td>
+      <td><span class="quality-tag quality-${d.quality}">${d.quality_name}</span></td>
+      <td class="num">${fmtPercent(d.probability)}</td>
+      <td class="num">${fmtJin4(d.unit_price)} 金</td>
+      <td class="num">${fmtJin4(d.contribution * fee)} 金</td>
+    </tr>
+  `).join('');
+}
+function renderChestSource(chest) {
+  const source = DATA.chest_source || {};
+  const url = source.url || '#';
+  document.getElementById('chestSourceNote').innerHTML =
+    `概率来源：<a href="${url}" target="_blank" rel="noopener noreferrer">魔盒《${source.title || '宝箱开材料数据分享'}》</a>` +
+    `（${source.collected_at || '历史'}实测，${source.published_at || '近期'}分享）。` +
+    `当前选择「材料」分支，不含书籍、秘籍、五行石；材料卖出已扣 ${(DATA.fee_rate * 100).toFixed(0)}% 手续费。` +
+    (chest.key === 'iron' ? '精铁样本仅 2,718 箱，明显少于另外两种，误差会更大。' : '青铜与锡制样本较大，概率参考更稳定。') +
+    '期望收益是长期均值，不代表少量开箱必赚。';
+}
+function updateChest() {
+  const chest = selectedChest();
+  if (!chest) return;
+  readChestInputs();
+  const calculations = calculateAllChests();
+  const selected = calculations.find(c => c.chest.key === chest.key);
+  renderChestMetrics(selected);
+  renderChestCompare(calculations);
+  renderCraftCompare(selected);
+  renderDropTable(chest);
+  renderChestSource(chest);
+}
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll('.mode-tab').forEach(btn => {
+    const active = btn.dataset.mode === mode;
+    btn.classList.toggle('active', active);
+    btn.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  document.getElementById('craftPanel').hidden = mode !== 'craft';
+  document.getElementById('chestPanel').hidden = mode !== 'chest';
+  if (mode === 'chest') updateChest();
+}
+function initChestControls() {
+  if (!getChests().length) {
+    document.getElementById('chestTab').hidden = true;
+    return;
+  }
+  initChestState();
+  renderChestSwitch();
+  syncChestInputs();
+  ['chestPrice', 'keyPrice', 'openCount'].forEach(id => {
+    document.getElementById(id).addEventListener('input', updateChest);
+  });
+  document.getElementById('resetChestPrice').addEventListener('click', () => {
+    const chest = selectedChest();
+    state.chestCosts[chest.key] = marketCosts(chest);
+    syncChestInputs();
+    updateChest();
+  });
+  updateChest();
+}
+
 function update() {
   const rows = filterRecipes();
   renderMetrics(rows);
   renderList(rows);
+  if (state.mode === 'chest') updateChest();
 }
 
 function init() {
@@ -613,6 +1044,8 @@ function init() {
     state.liqFilter = e.target.value;
     update();
   });
+  document.getElementById('craftTab').addEventListener('click', () => setMode('craft'));
+  document.getElementById('chestTab').addEventListener('click', () => setMode('chest'));
 }
 
 fetch('recipe_data.json').then(res => res.json()).then(data => {
@@ -621,6 +1054,7 @@ fetch('recipe_data.json').then(res => res.json()).then(data => {
   renderCraftInputs();
   renderCraftFilter();
   init();
+  initChestControls();
   update();
 }).catch(err => {
   document.getElementById('rankList').innerHTML = '<div class="empty">数据加载失败，请稍后刷新重试</div>';
