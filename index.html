@@ -334,6 +334,10 @@ select.filter {
   margin-left: auto; font-size: 11px; color: var(--text-2);
   padding: 2px 9px; border-radius: 6px; background: var(--accent-bg);
 }
+.gather-card .tier-info { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 6px 0 2px; }
+.gather-card .tier-label { font-size: 12px; font-weight: 600; color: var(--gather-color, var(--ink-2)); letter-spacing: 1px; }
+.gather-card .tier-map { font-size: 12px; color: var(--text-2); }
+.gather-card .tier-unlock { margin-left: auto; font-size: 11px; color: var(--text-3); }
 .gather-card .summary { display: flex; flex-wrap: wrap; gap: 18px; margin: 8px 0 2px; font-size: 13px; color: var(--text-2); }
 .gather-card .summary b { font-size: 15px; font-variant-numeric: tabular-nums; }
 .gather-card .energy-row {
@@ -1121,11 +1125,40 @@ function gatherLevel(gather) {
   }
   return state.gatherLevels[gather.key];
 }
-// 某采集在指定等级下可采的 tier（level <= 当前等级，取最高可采档）
-function activeTier(gather, level) {
+// 某采集在指定等级下「累计可采」的所有材料（等级越高，可采范围越大，低等级解锁的材料仍可采）。
+// 返回合并后的材料清单、最优单材料、涉及的解锁档位。
+function activeGather(gather, level) {
+  const fee = 1 - (DATA.fee_rate || 0);
   const tiers = (gather.tiers || []).filter(t => (t.level || 0) <= level);
   if (!tiers.length) return null;
-  return tiers[tiers.length - 1];
+
+  // 合并所有已解锁 tier 的材料（去重，保留 count/价格）
+  const outputs = [];
+  const seen = new Set();
+  tiers.forEach(t => {
+    (t.outputs || []).forEach(o => {
+      if (seen.has(o.item_id)) return;
+      seen.add(o.item_id);
+      outputs.push(o);
+    });
+  });
+
+  // 最优单材料 = 所有已解锁材料里「税后单次产值」最高的
+  const priced = outputs.filter(o => o.priced);
+  let best = null;
+  if (priced.length) {
+    best = priced.reduce((a, b) => ((b.revenue || 0) > (a.revenue || 0) ? b : a));
+  }
+  const net = best ? (best.revenue || 0) * fee : 0;
+
+  return {
+    outputs,
+    bestItemId: best ? best.item_id : null,
+    net,
+    // 当前等级最高解锁档的标签/地图/用途（用于展示）
+    topTier: tiers[tiers.length - 1],
+    unlockedLevels: tiers.map(t => t.level),
+  };
 }
 function renderGatherList() {
   const el = document.getElementById('gatherList');
@@ -1134,21 +1167,22 @@ function renderGatherList() {
 
   getGathers().forEach(gather => {
     const level = gatherLevel(gather);
-    const tier = activeTier(gather, level);
-    if (!tier) return;
+    const ag = activeGather(gather, level);
+    if (!ag) return;
 
     const card = document.createElement('div');
     card.className = 'gather-card';
     card.style.setProperty('--gather-color', gather.color || '#6f6e68');
 
     // 可计价产出（有价格的）
-    const priced = (tier.outputs || []).filter(o => o.priced);
-    const unpriced = (tier.outputs || []).filter(o => !o.priced);
-    const net = tier.net_revenue || 0;
+    const priced = (ag.outputs || []).filter(o => o.priced);
+    const unpriced = (ag.outputs || []).filter(o => !o.priced);
+    const net = ag.net || 0;
     const perEnergy = net / (gather.energy || 40);
+    const topTier = ag.topTier || {};
 
-    // 该档内最优单材料（后端已标记 best_item_id）
-    const bestItemId = tier.best_item_id;
+    // 最优单材料（全部已解锁材料里最赚的）
+    const bestItemId = ag.bestItemId;
 
     const mainRows = priced.map(o => {
       const isBest = bestItemId && o.item_id === bestItemId;
@@ -1195,12 +1229,13 @@ function renderGatherList() {
         <div class="gather-level-tabs">${levelTabs}</div>
       </div>
       <div class="tier-info">
-        <span class="tier-label">${tier.label}</span>
-        <span class="tier-map">${tier.map || ''}</span>
+        <span class="tier-label">${topTier.label || ''}</span>
+        <span class="tier-map">${topTier.map || ''}</span>
+        <span class="tier-unlock">已解锁 ${ag.unlockedLevels.length} 档 ${ag.outputs.length} 种材料</span>
       </div>
       <div class="summary">
         <span>采最优材料 <b class="${profitClass(net)}">${fmtJin2(net)}</b> 金/次（税后）</span>
-        <span>该档可采 ${tier.outputs.length} 种${tier.use ? ' · ' + tier.use : ''}</span>
+        <span>${topTier.use ? topTier.use : '累计可采全部材料，推荐最优'}</span>
       </div>
       <div class="energy-row">
         <span>每次消耗</span>
@@ -1209,7 +1244,7 @@ function renderGatherList() {
       </div>
       <div class="gather-outputs">
         <div class="gather-output-row header">
-          <div>可采材料</div><div class="num">每次数量</div><div class="num">单价</div><div class="num">税后小计</div>
+          <div>可采材料（累计）</div><div class="num">每次数量</div><div class="num">单价</div><div class="num">税后小计</div>
         </div>
         ${mainRows}
         ${unpricedRows}
