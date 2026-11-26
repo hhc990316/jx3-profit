@@ -52,25 +52,13 @@ body {
 .container { max-width: 1080px; margin: 0 auto; padding: 28px 20px; }
 
 /* 头部 */
-.header {
-  padding: 26px 8px 16px; position: relative;
-  margin: -8px -8px 0;
-  padding: 30px 24px 18px;
-  border-radius: 12px;
-  overflow: hidden;
+.header { padding: 26px 8px 16px; position: relative; overflow: visible; }
+.ink-wash {
+  position: absolute; left: -22px; top: 4px;
+  width: min(680px, 94%); height: auto;
+  pointer-events: none; z-index: 0;
 }
-/* 水墨晕染底色：淡墨在宣纸上晕开的不规则墨迹 */
-.header::before {
-  content: ""; position: absolute; inset: 0; z-index: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(ellipse 60% 90% at 18% 30%, rgba(120,116,105,0.14) 0%, transparent 70%),
-    radial-gradient(ellipse 45% 70% at 78% 22%, rgba(120,116,105,0.10) 0%, transparent 72%),
-    radial-gradient(ellipse 55% 80% at 60% 82%, rgba(120,116,105,0.08) 0%, transparent 70%),
-    radial-gradient(circle at 8% 85%, rgba(176,74,58,0.05) 0%, transparent 45%);
-  filter: blur(2px);
-}
-.header > * { position: relative; z-index: 1; }
+.header h1, .header .sub, .header .badge-row { position: relative; z-index: 1; }
 .header::after {
   content: ""; display: block; height: 1px; margin-top: 16px;
   background: linear-gradient(90deg, transparent, var(--ink-3) 25%, var(--ink-3) 75%, transparent);
@@ -274,6 +262,28 @@ select.filter {
 <body>
 <div class="container">
   <div class="header">
+    <svg class="ink-wash" viewBox="0 0 640 150" fill="none" aria-hidden="true">
+      <defs>
+        <filter id="inkRough" x="-20%" y="-40%" width="140%" height="180%">
+          <feTurbulence type="fractalNoise" baseFrequency="0.045 0.09" numOctaves="3" seed="7" result="n"/>
+          <feDisplacementMap in="SourceGraphic" in2="n" scale="16" xChannelSelector="R" yChannelSelector="G"/>
+          <feGaussianBlur stdDeviation="2.2"/>
+        </filter>
+        <radialGradient id="inkBody" cx="42%" cy="50%" r="62%">
+          <stop offset="0%" stop-color="#33322e" stop-opacity="0.20"/>
+          <stop offset="55%" stop-color="#33322e" stop-opacity="0.10"/>
+          <stop offset="100%" stop-color="#33322e" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <g filter="url(#inkRough)">
+        <ellipse cx="300" cy="70" rx="270" ry="40" fill="url(#inkBody)"/>
+        <ellipse cx="250" cy="66" rx="180" ry="26" fill="#33322e" opacity="0.06"/>
+      </g>
+      <path d="M70 108 C 220 100, 420 100, 560 104" stroke="#33322e" stroke-opacity="0.10" stroke-width="4" stroke-linecap="round" filter="url(#inkRough)"/>
+      <circle cx="566" cy="52" r="4.5" fill="#33322e" opacity="0.12"/>
+      <circle cx="582" cy="60" r="2.4" fill="#33322e" opacity="0.14"/>
+      <circle cx="60" cy="58" r="3" fill="#33322e" opacity="0.08"/>
+    </svg>
     <h1>剑网三魔盒 · 技艺精力收益测算</h1>
     <div class="sub">输入你的技艺等级，看看做什么最赚精力</div>
     <div class="badge-row" id="badgeRow"></div>
