@@ -289,6 +289,51 @@ select.filter {
 }
 .source-note a { color: var(--ink-2); }
 
+/* 采集收益 */
+.gather-list { display: flex; flex-direction: column; gap: 12px; }
+.gather-card {
+  border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+  background: var(--card-2); box-shadow: var(--shadow);
+}
+.gather-card .head { display: flex; align-items: center; gap: 10px; margin-bottom: 4px; }
+.gather-card .head .dot {
+  width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
+  background: var(--gather-color, var(--ink-3));
+}
+.gather-card .head .gname { font-weight: 700; font-size: 15px; letter-spacing: 1px; color: var(--ink); }
+.gather-card .head .tag {
+  margin-left: auto; font-size: 11px; color: var(--text-2);
+  padding: 2px 9px; border-radius: 6px; background: var(--accent-bg);
+}
+.gather-card .summary { display: flex; flex-wrap: wrap; gap: 18px; margin: 8px 0 2px; font-size: 13px; color: var(--text-2); }
+.gather-card .summary b { font-size: 15px; font-variant-numeric: tabular-nums; }
+.gather-card .energy-row {
+  display: flex; align-items: center; gap: 10px; margin-top: 12px;
+  padding: 8px 12px; border-radius: 9px; background: var(--card);
+  font-size: 13px; color: var(--text-2);
+}
+.gather-card .energy-row input {
+  width: 90px; min-height: 34px; padding: 5px 9px; text-align: right;
+  border: 1px solid var(--border); border-radius: 8px; background: var(--card-2);
+  color: var(--text); font-size: 14px; font-variant-numeric: tabular-nums; outline: none;
+}
+.gather-card .energy-row input:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px var(--accent-bg); }
+.gather-outputs { margin-top: 12px; border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+.gather-output-row {
+  display: grid; grid-template-columns: 1fr 90px 1fr 1fr; gap: 10px; align-items: center;
+  padding: 8px 12px; border-bottom: 1px solid var(--border); font-size: 13px;
+}
+.gather-output-row:last-child { border-bottom: 0; }
+.gather-output-row.header { background: var(--card); color: var(--text-3); font-size: 11px; letter-spacing: 1px; }
+.gather-output-row .num { text-align: right; font-variant-numeric: tabular-nums; }
+.gather-output-row input {
+  width: 90px; min-height: 32px; padding: 4px 9px; text-align: right;
+  border: 1px solid var(--border); border-radius: 7px; background: var(--card-2);
+  color: var(--text); font-size: 13px; font-variant-numeric: tabular-nums; outline: none;
+}
+.gather-output-row input:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px var(--accent-bg); }
+.gather-note { margin-top: 16px; }
+
 /* 统计卡 */
 .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 20px; }
 .metric {
@@ -449,6 +494,7 @@ select.filter {
   <nav class="mode-tabs" aria-label="收益测算类型">
     <button type="button" class="mode-tab active" id="craftTab" data-mode="craft" aria-selected="true" aria-controls="craftPanel">技艺收益</button>
     <button type="button" class="mode-tab" id="chestTab" data-mode="chest" aria-selected="false" aria-controls="chestPanel">宝箱测算</button>
+    <button type="button" class="mode-tab" id="gatherTab" data-mode="gather" aria-selected="false" aria-controls="gatherPanel">采集收益</button>
   </nav>
 
   <main>
@@ -549,6 +595,19 @@ select.filter {
       <div class="source-note" id="chestSourceNote"></div>
     </div>
   </section>
+
+  <section class="mode-panel" id="gatherPanel" aria-labelledby="gatherTab" hidden>
+    <div class="card">
+      <div class="card-head">
+        <div>
+          <h2>采集收益</h2>
+          <div class="tip">采集消耗「体力」，与制造/宝箱消耗的「精力」是两套独立资源，故此处单列、不与其混比。</div>
+        </div>
+      </div>
+      <div class="gather-list" id="gatherList"></div>
+      <div class="source-note gather-note" id="gatherNote"></div>
+    </div>
+  </section>
   </main>
 </div>
 
@@ -589,6 +648,7 @@ let state = {
   mode: 'craft',
   chestKey: 'bronze',
   chestCosts: {},
+  gatherOverrides: {},
 };
 
 function fmtJin(v) {
@@ -1002,6 +1062,137 @@ function updateChest() {
   renderDropTable(chest);
   renderChestSource(chest);
 }
+
+/* ===== 采集收益 ===== */
+function getGathers() {
+  return (DATA && DATA.gathers) ? DATA.gathers : [];
+}
+function gatherOverride(gather) {
+  if (!state.gatherOverrides[gather.key]) {
+    state.gatherOverrides[gather.key] = {
+      energy: gather.energy,
+      counts: {},
+    };
+    gather.outputs.forEach(o => { state.gatherOverrides[gather.key].counts[o.item_id] = o.count; });
+  }
+  return state.gatherOverrides[gather.key];
+}
+function calcGather(gather) {
+  const ov = gatherOverride(gather);
+  const fee = 1 - (DATA.fee_rate || 0);
+  const outputs = gather.outputs.map(o => {
+    const count = ov.counts[o.item_id] != null ? ov.counts[o.item_id] : o.count;
+    return { ...o, count, revenue: o.unit_price * count };
+  });
+  const revenue = outputs.reduce((s, o) => s + o.revenue, 0);
+  const net = revenue * fee;
+  const energy = ov.energy;
+  return { outputs, revenue, net, energy, perEnergy: net / energy };
+}
+function renderGatherList() {
+  const el = document.getElementById('gatherList');
+  const fee = 1 - (DATA.fee_rate || 0);
+  el.innerHTML = '';
+  getGathers().forEach(gather => {
+    const card = document.createElement('div');
+    card.className = 'gather-card';
+    card.style.setProperty('--gather-color', gather.color || '#6f6e68');
+    const calc = calcGather(gather);
+
+    const mainRows = gather.outputs.map(o => {
+      const count = state.gatherOverrides[gather.key].counts[o.item_id] != null
+        ? state.gatherOverrides[gather.key].counts[o.item_id] : o.count;
+      return `
+        <div class="gather-output-row" data-item="${o.item_id}">
+          <div>${o.name}</div>
+          <div class="num"><input type="number" min="0" step="1" value="${count}" data-item="${o.item_id}" aria-label="${o.name} 产出数量"></div>
+          <div class="num">${fmtJin4(o.unit_price)} 金</div>
+          <div class="num">${fmtJin4(o.unit_price * count * fee)} 金</div>
+        </div>`;
+    }).join('');
+
+    const sideRows = (gather.side_outputs || []).map(o => `
+      <div class="gather-output-row" style="opacity:.85">
+        <div>${o.name} <span class="quality-tag quality-blue">伴生</span></div>
+        <div class="num">—</div>
+        <div class="num">${fmtJin4(o.unit_price)} 金</div>
+        <div class="num" style="color:var(--text-3)">概率产出</div>
+      </div>`).join('');
+
+    const newRows = (gather.new_materials || []).map(o => `
+      <div class="gather-output-row" style="opacity:.85">
+        <div>${o.name} <span class="quality-tag quality-purple">新版</span></div>
+        <div class="num">—</div>
+        <div class="num">${fmtJin4(o.unit_price)} 金</div>
+        <div class="num" style="color:var(--text-3)">高阶采集</div>
+      </div>`).join('');
+
+    card.innerHTML = `
+      <div class="head">
+        <span class="dot"></span>
+        <span class="gname">${gather.name}</span>
+        <span class="tag">${gather.energy_unit} · 每点 ${fmtSignedJin(calc.perEnergy)} 金</span>
+      </div>
+      <div class="summary">
+        <span>税后主产值 <b class="${profitClass(calc.net)}">${fmtJin2(calc.net)}</b> 金/次</span>
+        <span>主产出 ${gather.outputs.length} 种</span>
+      </div>
+      <div class="energy-row">
+        <span>每次消耗</span>
+        <input type="number" min="1" step="1" value="${state.gatherOverrides[gather.key].energy}" data-energy="${gather.key}" aria-label="${gather.name} 每次体力消耗">
+        <span>${gather.energy_unit}</span>
+      </div>
+      <div class="gather-outputs">
+        <div class="gather-output-row header">
+          <div>主产出</div><div class="num">每次数量</div><div class="num">单价</div><div class="num">税后小计</div>
+        </div>
+        ${mainRows}
+        ${sideRows}
+        ${newRows}
+      </div>
+    `;
+    el.appendChild(card);
+  });
+
+  el.querySelectorAll('input[data-energy]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const key = inp.dataset.energy;
+      state.gatherOverrides[key].energy = parseInt(inp.value, 10) || 1;
+      renderGatherList();
+    });
+  });
+  el.querySelectorAll('input[data-item]').forEach(inp => {
+    inp.addEventListener('input', () => {
+      const itemId = inp.dataset.item;
+      const key = findGatherKeyByItem(itemId);
+      if (key) {
+        state.gatherOverrides[key].counts[itemId] = parseInt(inp.value, 10) || 0;
+        renderGatherList();
+      }
+    });
+  });
+}
+function findGatherKeyByItem(itemId) {
+  for (const g of getGathers()) {
+    if (g.outputs.some(o => o.item_id === itemId)) return g.key;
+  }
+  return null;
+}
+function renderGatherNote() {
+  const version = (DATA.gather_source && DATA.gather_source.version) || '苍生铸世';
+  document.getElementById('gatherNote').innerHTML =
+    `<b>${version}</b> 版本 · 采集消耗「体力」，产出数量与体力消耗随技艺等级/采集目标浮动，此处为常见值预置，可直接改数量与体力。` +
+    `伴生物（硼砂/辉石/露水/云芝/宝石等）为概率产出，官方未公布精确概率，单列不计入主收益。` +
+    `材料价格走交易行实时最低挂单价，卖出已扣 ${(DATA.fee_rate * 100).toFixed(0)}% 手续费。`;
+}
+function initGather() {
+  if (!getGathers().length) {
+    document.getElementById('gatherTab').hidden = true;
+    return;
+  }
+  renderGatherList();
+  renderGatherNote();
+}
 function setMode(mode) {
   state.mode = mode;
   document.querySelectorAll('.mode-tab').forEach(btn => {
@@ -1011,7 +1202,9 @@ function setMode(mode) {
   });
   document.getElementById('craftPanel').hidden = mode !== 'craft';
   document.getElementById('chestPanel').hidden = mode !== 'chest';
+  document.getElementById('gatherPanel').hidden = mode !== 'gather';
   if (mode === 'chest') updateChest();
+  if (mode === 'gather') renderGatherList();
 }
 function initChestControls() {
   if (!getChests().length) {
@@ -1051,6 +1244,7 @@ function init() {
   });
   document.getElementById('craftTab').addEventListener('click', () => setMode('craft'));
   document.getElementById('chestTab').addEventListener('click', () => setMode('chest'));
+  document.getElementById('gatherTab').addEventListener('click', () => setMode('gather'));
 }
 
 fetch('recipe_data.json').then(res => res.json()).then(data => {
@@ -1060,6 +1254,7 @@ fetch('recipe_data.json').then(res => res.json()).then(data => {
   renderCraftFilter();
   init();
   initChestControls();
+  initGather();
   update();
 }).catch(err => {
   document.getElementById('rankList').innerHTML = '<div class="empty">数据加载失败，请稍后刷新重试</div>';
