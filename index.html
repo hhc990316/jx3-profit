@@ -4,75 +4,110 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>剑网三魔盒 · 技艺精力收益测算</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;500;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* 莫兰迪灰调 ins 风配色 */
-  --bg: #f2efe9;
-  --card: #faf8f4;
+  /* 国风武侠 · 水墨朱砂配色 */
+  --bg: #f4eee2;
+  --card: #fbf7ee;
   --card-2: #ffffff;
-  --text: #3d3a36;
-  --text-2: #8a8478;
-  --text-3: #b4aea3;
-  --border: #e7e2d8;
-  --up: #c06b6b;
-  --down: #7fa08c;
-  --accent: #8d9a8e;
-  --accent-2: #6f7d72;
-  --accent-bg: #eef0eb;
-  --warn: #b89a6a;
-  --warn-bg: #f5efe2;
-  --radius: 20px;
-  --shadow: 0 4px 20px rgba(90, 84, 72, 0.06);
-  --shadow-hover: 0 8px 28px rgba(90, 84, 72, 0.12);
+  --ink: #332b23;
+  --text: #3d352b;
+  --text-2: #8a7d69;
+  --text-3: #b3a892;
+  --border: #e6dcc8;
+  --border-strong: #d5c6a8;
+  --up: #b03a2e;
+  --down: #5f7d4f;
+  --accent: #b03a2e;
+  --accent-2: #8f2f26;
+  --accent-bg: #f6e8e2;
+  --gold: #b8912f;
+  --gold-bg: #f5ecd7;
+  --warn: #a87e2f;
+  --warn-bg: #f5ead3;
+  --radius: 16px;
+  --shadow: 0 3px 16px rgba(80, 60, 30, 0.07);
+  --shadow-hover: 0 8px 26px rgba(80, 60, 30, 0.13);
+  --font-display: "ZCOOL XiaoWei", "Noto Serif SC", "STKaiti", "KaiTi", serif;
+  --font-body: "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-family: var(--font-body);
   background: var(--bg);
-  background-image: radial-gradient(circle at 15% 10%, #ece7dc 0%, transparent 45%), radial-gradient(circle at 85% 90%, #e9e4d9 0%, transparent 45%);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgba(184,145,47,0.08) 0%, transparent 42%),
+    radial-gradient(circle at 88% 90%, rgba(176,58,46,0.06) 0%, transparent 45%);
   color: var(--text);
   font-size: 14px;
-  line-height: 1.7;
+  line-height: 1.75;
   -webkit-font-smoothing: antialiased;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.3px;
 }
-.container { max-width: 1080px; margin: 0 auto; padding: 24px 20px; }
+.container { max-width: 1080px; margin: 0 auto; padding: 28px 20px; }
 
 /* 头部 */
-.header { padding: 24px 6px 12px; }
-.header h1 { font-size: 22px; font-weight: 600; letter-spacing: 0.5px; }
-.header .sub { color: var(--text-2); font-size: 13px; margin-top: 6px; }
+.header { padding: 26px 8px 16px; position: relative; }
+.header::after {
+  content: ""; display: block; height: 2px; margin-top: 16px;
+  background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
+  opacity: 0.5;
+}
+.header h1 {
+  font-family: var(--font-display);
+  font-size: 28px; font-weight: 600; letter-spacing: 2px;
+  color: var(--ink); position: relative; display: inline-block;
+}
+.header h1::before {
+  content: "◤"; color: var(--accent); font-size: 20px;
+  margin-right: 8px; opacity: 0.7;
+}
+.header .sub { color: var(--text-2); font-size: 13px; margin-top: 8px; letter-spacing: 1px; }
 .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .badge {
   font-size: 12px; color: var(--text-2);
   background: var(--card-2); border: 1px solid var(--border);
-  padding: 5px 14px; border-radius: 999px;
-  box-shadow: 0 1px 3px rgba(90,84,72,.05);
+  padding: 5px 14px; border-radius: 6px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 1px 3px rgba(80,60,30,.05);
 }
 
 /* 面板卡片 */
 .card {
   background: var(--card); border: 1px solid var(--border);
-  border-radius: var(--radius); padding: 22px; margin-bottom: 18px;
+  border-radius: var(--radius); padding: 24px; margin-bottom: 20px;
   box-shadow: var(--shadow);
+  position: relative;
 }
-.card h2 { font-size: 15px; font-weight: 600; margin-bottom: 14px; letter-spacing: 0.5px; }
+.card h2 {
+  font-family: var(--font-display);
+  font-size: 17px; font-weight: 600; margin-bottom: 16px;
+  letter-spacing: 2px; color: var(--ink);
+  padding-left: 12px; position: relative;
+}
+.card h2::before {
+  content: ""; position: absolute; left: 0; top: 3px; bottom: 3px;
+  width: 3px; border-radius: 2px; background: var(--accent);
+}
 
 /* 等级输入区 */
 .craft-inputs { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 14px; }
 .craft-input {
-  border: 1px solid var(--border); border-radius: 16px; padding: 16px;
+  border: 1px solid var(--border); border-radius: 14px; padding: 16px;
   display: flex; flex-direction: column; gap: 10px;
   background: var(--card-2);
-  box-shadow: 0 2px 8px rgba(90,84,72,.05);
+  box-shadow: 0 2px 8px rgba(80,60,30,.05);
   transition: box-shadow .2s, transform .2s;
 }
 .craft-input:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
-.craft-input .craft-name { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 7px; }
+.craft-input .craft-name { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 7px; letter-spacing: 1px; }
 .craft-input .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
 .craft-input input[type=number] {
   width: 100%; padding: 10px 12px; font-size: 16px;
-  border: 1px solid var(--border); border-radius: 12px; outline: none;
+  border: 1px solid var(--border); border-radius: 10px; outline: none;
   background: var(--card); color: var(--text); transition: border-color .2s, box-shadow .2s;
 }
 .craft-input input[type=number]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
@@ -85,10 +120,9 @@ body {
 .craft-input label.switch input[type=checkbox] {
   position: absolute; opacity: 0; width: 0; height: 0; pointer-events: none;
 }
-/* 用 span 模拟一个大的可点击开关 */
 .craft-input label.switch .toggle-track {
   width: 44px; height: 25px; border-radius: 25px; flex-shrink: 0;
-  background: #d9d4c8; position: relative; transition: background .25s;
+  background: #dcd2bf; position: relative; transition: background .25s;
   pointer-events: none;
 }
 .craft-input label.switch .toggle-track::after {
@@ -106,48 +140,58 @@ body {
 /* 控制按钮行 */
 .controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 14px; }
 .btn {
-  padding: 9px 18px; border-radius: 999px; border: 1px solid var(--border);
+  padding: 9px 18px; border-radius: 8px; border: 1px solid var(--border);
   background: var(--card-2); cursor: pointer; font-size: 13px; color: var(--text);
-  transition: all .2s;
+  transition: all .2s; letter-spacing: 1px;
 }
-.btn:hover { border-color: var(--accent); color: var(--accent-2); }
-.btn.active { background: var(--accent-2); border-color: var(--accent-2); color: #fff; }
+.btn:hover { border-color: var(--accent); color: var(--accent); }
+.btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 select.filter {
-  padding: 9px 14px; border-radius: 999px; border: 1px solid var(--border);
+  padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border);
   background: var(--card-2); font-size: 13px; outline: none; color: var(--text);
 }
 
 /* 统计卡 */
-.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 18px; }
-.metric { background: var(--card-2); border: 1px solid var(--border); border-radius: 16px; padding: 18px; box-shadow: var(--shadow); }
-.metric .label { font-size: 12px; color: var(--text-2); }
-.metric .value { font-size: 24px; font-weight: 600; margin-top: 4px; }
+.metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 14px; margin-bottom: 20px; }
+.metric {
+  background: var(--card-2); border: 1px solid var(--border);
+  border-radius: 14px; padding: 18px; box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+}
+.metric::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--gold));
+}
+.metric .label { font-size: 12px; color: var(--text-2); letter-spacing: 1px; }
+.metric .value { font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
 .metric .unit { font-size: 12px; color: var(--text-3); }
 
 /* 收益榜列表 */
 .rank-list { display: flex; flex-direction: column; gap: 10px; }
 .rank-item {
-  border: 1px solid var(--border); border-radius: 16px; padding: 16px;
+  border: 1px solid var(--border); border-radius: 14px; padding: 16px;
   background: var(--card-2); cursor: pointer;
-  box-shadow: 0 2px 8px rgba(90,84,72,.05);
-  transition: box-shadow .2s, transform .2s;
+  box-shadow: 0 2px 8px rgba(80,60,30,.05);
+  transition: box-shadow .2s, transform .2s, border-color .2s;
 }
-.rank-item:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
+.rank-item:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); border-color: var(--border-strong); }
 .rank-item .top { display: flex; align-items: center; gap: 12px; }
 .rank-num {
-  width: 30px; height: 30px; border-radius: 10px; flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
   font-size: 13px; font-weight: 600; background: var(--bg); color: var(--text-2);
+  font-family: var(--font-display);
 }
-.rank-num.top1 { background: #efe7d6; color: #a8864a; }
-.rank-num.top2 { background: #e8e8e4; color: #8a8a84; }
-.rank-num.top3 { background: #ecddd6; color: #b07a64; }
-.rank-item .name { font-weight: 600; font-size: 14px; flex: 1; }
+.rank-num.top1 { background: var(--gold-bg); color: #a07a1f; box-shadow: inset 0 0 0 1px var(--gold); }
+.rank-num.top2 { background: #ecece8; color: #8a8a84; }
+.rank-num.top3 { background: var(--accent-bg); color: var(--accent-2); }
+.rank-item .name { font-weight: 600; font-size: 14px; flex: 1; letter-spacing: 0.5px; }
 .rank-item .craft-tag {
-  font-size: 11px; padding: 3px 10px; border-radius: 999px; flex-shrink: 0;
+  font-size: 11px; padding: 3px 10px; border-radius: 6px; flex-shrink: 0;
+  letter-spacing: 1px;
 }
 .rank-item .profit { text-align: right; }
-.rank-item .profit .big { font-size: 16px; font-weight: 600; }
+.rank-item .profit .big { font-size: 16px; font-weight: 600; font-variant-numeric: tabular-nums; }
 .rank-item .profit .small { font-size: 11px; color: var(--text-3); }
 .pos { color: var(--up); }
 .neg { color: var(--down); }
@@ -156,10 +200,10 @@ select.filter {
 .rank-item .meta .liq-good { color: var(--down); }
 .rank-item .meta .liq-mid { color: var(--warn); }
 .rank-item .meta .liq-bad { color: var(--up); }
-.liq-tag { font-size: 11px; padding: 2px 8px; border-radius: 999px; }
-.liq-good { background: #e9f0eb; color: #6f8f7c; }
-.liq-mid { background: #f3ecdd; color: #a8864a; }
-.liq-bad { background: #f2e2df; color: #b0706b; }
+.liq-tag { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
+.liq-good { background: #e9efe4; color: #5f7d4f; }
+.liq-mid { background: #f3ecd9; color: #a07a1f; }
+.liq-bad { background: #f6e6e2; color: #b03a2e; }
 
 /* 展开详情 */
 .detail {
@@ -167,7 +211,7 @@ select.filter {
   display: none;
 }
 .detail.open { display: block; }
-.detail h4 { font-size: 12px; color: var(--text-2); margin: 10px 0 6px; }
+.detail h4 { font-size: 12px; color: var(--text-2); margin: 10px 0 6px; letter-spacing: 1px; }
 .detail table { width: 100%; border-collapse: collapse; font-size: 12px; }
 .detail th, .detail td { text-align: left; padding: 5px 8px; border-bottom: 1px solid var(--border); }
 .detail th { color: var(--text-3); font-weight: 400; }
@@ -181,9 +225,26 @@ select.filter {
 /* 分类筛选按钮 */
 .craft-filter { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* 入场动画 */
+@keyframes riseIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
+}
+.header, .card, .metric {
+  animation: riseIn var(--dur-base, 400ms) cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.card:nth-of-type(2) { animation-delay: 80ms; }
+.card:nth-of-type(3) { animation-delay: 160ms; }
+.metrics { animation-delay: 200ms; }
+
 @media (max-width: 600px) {
   .rank-item .meta { gap: 8px; }
-  .container { padding: 10px; }
+  .container { padding: 12px; }
+  .header h1 { font-size: 22px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
 }
 </style>
 </head>
@@ -230,11 +291,11 @@ select.filter {
 
 <script>
 const CRAFT_COLORS = {
-  cooking: '#7fa08c',
-  medicine: '#8d9a8e',
-  tailoring: '#b08a8a',
-  founding: '#a8864a',
-  furniture: '#8a86a8',
+  cooking: '#5f7d4f',
+  medicine: '#6b8e8e',
+  tailoring: '#b03a2e',
+  founding: '#a87e2f',
+  furniture: '#7d6a9a',
 };
 const CRAFT_NAMES = {
   cooking: '烹饪', medicine: '制药', tailoring: '缝纫',
