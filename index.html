@@ -75,6 +75,17 @@ body {
   background: var(--cinnabar); opacity: 0.85;
 }
 .header .sub { color: var(--text-2); font-size: 13px; margin-top: 8px; letter-spacing: 1px; }
+/* 朱砂闲章 */
+.seal {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--cinnabar); color: #fdfcf8;
+  font-size: 12px; font-weight: 700; line-height: 1.15;
+  writing-mode: vertical-rl; letter-spacing: 2px;
+  padding: 5px 4px; border-radius: 4px; margin-left: 12px;
+  transform: rotate(-4deg) translateY(2px);
+  box-shadow: 0 1px 3px rgba(176,74,58,.28), inset 0 0 0 1px rgba(255,255,255,.25);
+  vertical-align: middle; user-select: none;
+}
 .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
 .badge {
   font-size: 12px; color: var(--text-2);
@@ -115,6 +126,8 @@ body {
 .craft-input:hover { box-shadow: var(--shadow-hover); transform: translateY(-1px); }
 .craft-input .craft-name { font-size: 14px; font-weight: 500; display: flex; align-items: center; gap: 7px; letter-spacing: 1px; }
 .craft-input .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.craft-input .craft-ico { width: 20px; height: 20px; display: inline-flex; flex-shrink: 0; }
+.craft-input .craft-ico svg { width: 20px; height: 20px; }
 .craft-input input[type=number] {
   width: 100%; padding: 10px 12px; font-size: 16px;
   border: 1px solid var(--border); border-radius: 10px; outline: none;
@@ -236,6 +249,13 @@ select.filter {
 /* 分类筛选按钮 */
 .craft-filter { display: flex; flex-wrap: wrap; gap: 8px; }
 
+/* 角落淡墨竹枝 */
+.corner-leaf {
+  position: absolute; right: 4px; top: 4px;
+  width: 82px; height: 82px; pointer-events: none; z-index: 0;
+}
+.has-leaf h2, .has-leaf .rank-list { position: relative; z-index: 1; }
+
 /* 入场动画 */
 @keyframes riseIn {
   from { opacity: 0; transform: translateY(18px); }
@@ -279,13 +299,24 @@ select.filter {
         <ellipse cx="300" cy="70" rx="270" ry="40" fill="url(#inkBody)"/>
         <ellipse cx="250" cy="66" rx="180" ry="26" fill="#33322e" opacity="0.06"/>
       </g>
+      <!-- 淡墨远山 -->
+      <path d="M-10 46 L52 24 L104 42 L168 16 L232 40 L300 22 L362 44 L362 64 L-10 64 Z"
+            fill="#33322e" opacity="0.07"/>
+      <path d="M300 40 L352 24 L410 44 L470 30 L470 58 L300 58 Z"
+            fill="#33322e" opacity="0.05"/>
+      <!-- 鹤群（纯阳意象，渐远渐小） -->
+      <g fill="none" stroke="#33322e" stroke-linecap="round">
+        <path d="M498 40 q7 -8 14 0 q7 -8 14 0" stroke-width="2.2" stroke-opacity="0.42"/>
+        <path d="M540 30 q5 -6 10 0 q5 -6 10 0" stroke-width="1.8" stroke-opacity="0.34"/>
+        <path d="M470 52 q4 -5 8 0 q4 -5 8 0" stroke-width="1.5" stroke-opacity="0.26"/>
+      </g>
       <path d="M70 108 C 220 100, 420 100, 560 104" stroke="#33322e" stroke-opacity="0.10" stroke-width="4" stroke-linecap="round" filter="url(#inkRough)"/>
       <circle cx="566" cy="52" r="4.5" fill="#33322e" opacity="0.12"/>
       <circle cx="582" cy="60" r="2.4" fill="#33322e" opacity="0.14"/>
       <circle cx="60" cy="58" r="3" fill="#33322e" opacity="0.08"/>
     </svg>
-    <h1>剑网三魔盒 · 技艺精力收益测算</h1>
-    <div class="sub">输入你的技艺等级，看看做什么最赚精力</div>
+    <h1>剑网三魔盒 · 技艺精力收益测算<span class="seal">魔盒</span></h1>
+    <div class="sub">精打细算，方显侠客本色 —— 输入技艺等级，看看做什么最赚精力</div>
     <div class="badge-row" id="badgeRow"></div>
   </div>
 
@@ -316,7 +347,17 @@ select.filter {
 
   <div class="metrics" id="metrics"></div>
 
-  <div class="card">
+  <div class="card has-leaf">
+    <svg class="corner-leaf" viewBox="0 0 80 80" fill="none" aria-hidden="true">
+      <g stroke="#33322e" stroke-opacity="0.12" stroke-width="1.6" stroke-linecap="round">
+        <path d="M72 6 C 52 20, 42 42, 40 74"/>
+        <path d="M60 22 q-12 -3 -20 4"/>
+        <path d="M52 38 q-12 0 -18 9"/>
+        <path d="M64 16 q2 -12 11 -15"/>
+        <path d="M46 52 q-10 3 -13 13"/>
+        <path d="M58 30 q10 -2 14 -10"/>
+      </g>
+    </svg>
     <h2 id="rankTitle">收益榜</h2>
     <div class="rank-list" id="rankList"></div>
   </div>
@@ -333,6 +374,14 @@ const CRAFT_COLORS = {
 const CRAFT_NAMES = {
   cooking: '烹饪', medicine: '制药', tailoring: '缝纫',
   founding: '锻造', furniture: '梓匠',
+};
+// 水墨线条图标（stroke 用 currentColor，随技艺配色）
+const CRAFT_ICONS = {
+  cooking: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10h16v4a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M2.5 10h19"/><path d="M9 6.5c0-1 1-1.2 1-2.2M14 6.5c0-1 1-1.2 1-2.2"/></svg>`,
+  medicine: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 11h14v2a6 6 0 0 1-6 6h-2a6 6 0 0 1-6-6z"/><path d="M12 11V5l4-1.5"/><path d="M4 20h16"/></svg>`,
+  tailoring: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19L16 8"/><path d="M16 8l3-3"/><circle cx="17.5" cy="6.5" r="1.3"/><path d="M5 19c-1.5 2 .5 3.5 2.5 2.5S10 18 13 18"/></svg>`,
+  founding: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 18L18 6"/><path d="M18 6l2-2"/><path d="M5 13l6 6"/><path d="M4 20l3-3"/></svg>`,
+  furniture: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="1.5"/><path d="M12 4v16M4 12h16"/></svg>`,
 };
 const CRAFT_KEYS = ['cooking', 'medicine', 'tailoring', 'founding', 'furniture'];
 
@@ -391,7 +440,7 @@ function renderCraftInputs() {
     div.className = 'craft-input';
     const color = CRAFT_COLORS[key];
     div.innerHTML = `
-      <div class="craft-name"><span class="dot" style="background:${color}"></span>${CRAFT_NAMES[key]}</div>
+      <div class="craft-name"><span class="craft-ico" style="color:${color}">${CRAFT_ICONS[key]}</span>${CRAFT_NAMES[key]}</div>
       <input type="number" min="0" max="50" placeholder="等级" data-key="${key}" value="${state.levels[key] || ''}">
       <label class="switch">
         <input type="checkbox" data-exp="${key}" ${state.expertise[key] ? 'checked' : ''}>
