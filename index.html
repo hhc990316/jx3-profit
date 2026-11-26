@@ -316,6 +316,10 @@ select.filter {
   color: #fff; background: var(--ink); border-color: var(--ink);
 }
 .gather-level-hint { display: block; margin-top: 6px; font-size: 11px; color: var(--text-3); }
+/* 卡片内联等级选择器 */
+.gather-level-inline { display: flex; align-items: center; gap: 10px; margin: 10px 0 4px; flex-wrap: wrap; }
+.gather-level-inline .gather-level-label { display: inline; margin-bottom: 0; font-size: 12px; color: var(--text-2); letter-spacing: 1px; white-space: nowrap; }
+.gather-level-inline .gather-level-tab { min-height: 32px; padding: 4px 12px; font-size: 12px; }
 .gather-card {
   border: 1px solid var(--border); border-radius: 14px; padding: 18px;
   background: var(--card-2); box-shadow: var(--shadow);
@@ -638,9 +642,7 @@ select.filter {
         </div>
       </div>
       <div class="gather-level">
-        <span class="gather-level-label">你的采集等级</span>
-        <div class="gather-level-tabs" id="gatherLevelTabs" role="tablist" aria-label="采集等级"></div>
-        <span class="gather-level-hint">选择等级后，下方只显示该等级可采集的材料并推荐最优</span>
+        <span class="gather-level-hint">神农 / 采金 / 庖丁三个技艺独立升级，各自选择等级后，下方分别显示该技艺当前等级可采的材料并推荐最优。</span>
       </div>
       <div class="gather-list" id="gatherList"></div>
       <div class="source-note gather-note" id="gatherNote"></div>
@@ -687,7 +689,7 @@ let state = {
   chestKey: 'bronze',
   chestCosts: {},
   gatherOverrides: {},
-  gatherLevel: 30,
+  gatherLevels: {},
 };
 
 function fmtJin(v) {
@@ -1107,11 +1109,17 @@ function updateChest() {
 function getGathers() {
   return (DATA && DATA.gathers) ? DATA.gathers : [];
 }
-// 采集等级档位（苍生铸世：按各采集实际解锁等级动态收集，1/3/5/7/9/25/30）
-function gatherLevels() {
-  const set = [1];
-  getGathers().forEach(g => (g.tiers || []).forEach(t => { if (t.level != null && !set.includes(t.level)) set.push(t.level); }));
-  return set.sort((a, b) => a - b);
+// 某采集技艺的等级档位（该技艺 tiers 里的解锁等级，升序）
+function gatherLevelsOf(gather) {
+  return (gather.tiers || []).map(t => t.level).filter(v => v != null).sort((a, b) => a - b);
+}
+// 读取该技艺当前选择的等级；未设置时默认取其最高档（满级解锁）
+function gatherLevel(gather) {
+  if (state.gatherLevels[gather.key] == null) {
+    const lvs = gatherLevelsOf(gather);
+    state.gatherLevels[gather.key] = lvs.length ? lvs[lvs.length - 1] : 30;
+  }
+  return state.gatherLevels[gather.key];
 }
 // 某采集在指定等级下可采的 tier（level <= 当前等级，取最高可采档）
 function activeTier(gather, level) {
@@ -1119,30 +1127,13 @@ function activeTier(gather, level) {
   if (!tiers.length) return null;
   return tiers[tiers.length - 1];
 }
-function renderGatherLevelTabs() {
-  const el = document.getElementById('gatherLevelTabs');
-  if (!el) return;
-  const levels = gatherLevels();
-  el.innerHTML = levels.map(lv => {
-    const active = lv === state.gatherLevel ? ' active' : '';
-    const label = lv === 1 ? '1级基础' : (lv === 30 ? '30满级' : lv + '级');
-    return `<button type="button" class="gather-level-tab${active}" data-level="${lv}">${label}</button>`;
-  }).join('');
-  el.querySelectorAll('.gather-level-tab').forEach(btn => {
-    btn.addEventListener('click', () => {
-      state.gatherLevel = parseInt(btn.dataset.level, 10);
-      renderGatherLevelTabs();
-      renderGatherList();
-    });
-  });
-}
 function renderGatherList() {
   const el = document.getElementById('gatherList');
   const fee = 1 - (DATA.fee_rate || 0);
-  const level = state.gatherLevel || 30;
   el.innerHTML = '';
 
   getGathers().forEach(gather => {
+    const level = gatherLevel(gather);
     const tier = activeTier(gather, level);
     if (!tier) return;
 
@@ -1186,11 +1177,22 @@ function renderGatherList() {
         <div class="num" style="color:var(--text-3)">概率产出</div>
       </div>`).join('');
 
+    // 该技艺独立的等级选择器
+    const levelTabs = gatherLevelsOf(gather).map(lv => {
+      const active = lv === level ? ' active' : '';
+      const label = lv === 30 ? '30满级' : lv + '级';
+      return `<button type="button" class="gather-level-tab${active}" data-gather="${gather.key}" data-level="${lv}">${label}</button>`;
+    }).join('');
+
     card.innerHTML = `
       <div class="head">
         <span class="dot"></span>
         <span class="gname">${gather.name}</span>
         <span class="tag">${gather.energy_unit} · 每点 ${fmtSignedJin(perEnergy)} 金</span>
+      </div>
+      <div class="gather-level-inline">
+        <span class="gather-level-label">${gather.name}等级</span>
+        <div class="gather-level-tabs">${levelTabs}</div>
       </div>
       <div class="tier-info">
         <span class="tier-label">${tier.label}</span>
@@ -1215,6 +1217,15 @@ function renderGatherList() {
       </div>
     `;
     el.appendChild(card);
+  });
+
+  // 等级切换
+  el.querySelectorAll('.gather-level-tab').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const key = btn.dataset.gather;
+      state.gatherLevels[key] = parseInt(btn.dataset.level, 10);
+      renderGatherList();
+    });
   });
 
   el.querySelectorAll('input[data-energy]').forEach(inp => {
@@ -1253,7 +1264,6 @@ function initGather() {
     document.getElementById('gatherTab').hidden = true;
     return;
   }
-  renderGatherLevelTabs();
   renderGatherList();
   renderGatherNote();
 }
