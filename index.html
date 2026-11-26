@@ -52,7 +52,25 @@ body {
 .container { max-width: 1080px; margin: 0 auto; padding: 28px 20px; }
 
 /* 头部 */
-.header { padding: 26px 8px 16px; position: relative; }
+.header {
+  padding: 26px 8px 16px; position: relative;
+  margin: -8px -8px 0;
+  padding: 30px 24px 18px;
+  border-radius: 12px;
+  overflow: hidden;
+}
+/* 水墨晕染底色：淡墨在宣纸上晕开的不规则墨迹 */
+.header::before {
+  content: ""; position: absolute; inset: 0; z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 60% 90% at 18% 30%, rgba(120,116,105,0.14) 0%, transparent 70%),
+    radial-gradient(ellipse 45% 70% at 78% 22%, rgba(120,116,105,0.10) 0%, transparent 72%),
+    radial-gradient(ellipse 55% 80% at 60% 82%, rgba(120,116,105,0.08) 0%, transparent 70%),
+    radial-gradient(circle at 8% 85%, rgba(176,74,58,0.05) 0%, transparent 45%);
+  filter: blur(2px);
+}
+.header > * { position: relative; z-index: 1; }
 .header::after {
   content: ""; display: block; height: 1px; margin-top: 16px;
   background: linear-gradient(90deg, transparent, var(--ink-3) 25%, var(--ink-3) 75%, transparent);
