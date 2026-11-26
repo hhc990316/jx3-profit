@@ -9,29 +9,33 @@
 <link href="https://fonts.googleapis.com/css2?family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;500;600;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
 <style>
 :root {
-  /* 国风武侠 · 水墨朱砂配色 */
-  --bg: #f4eee2;
-  --card: #fbf7ee;
+  /* 水墨风 · 宣纸为底、浓淡墨为主、朱砂仅点睛 */
+  --bg: #f5f3ee;
+  --card: #fdfcf8;
   --card-2: #ffffff;
-  --ink: #332b23;
-  --text: #3d352b;
-  --text-2: #8a7d69;
-  --text-3: #b3a892;
-  --border: #e6dcc8;
-  --border-strong: #d5c6a8;
-  --up: #b03a2e;
-  --down: #5f7d4f;
-  --accent: #b03a2e;
-  --accent-2: #8f2f26;
-  --accent-bg: #f6e8e2;
-  --gold: #b8912f;
-  --gold-bg: #f5ecd7;
-  --warn: #a87e2f;
-  --warn-bg: #f5ead3;
-  --radius: 16px;
-  --shadow: 0 3px 16px rgba(80, 60, 30, 0.07);
-  --shadow-hover: 0 8px 26px rgba(80, 60, 30, 0.13);
-  --font-display: "ZCOOL XiaoWei", "Noto Serif SC", "STKaiti", "KaiTi", serif;
+  --ink: #2a2a28;
+  --ink-2: #4a4a47;
+  --ink-3: #6f6e68;
+  --text: #3a3a37;
+  --text-2: #8c8a83;
+  --text-3: #b5b3ac;
+  --border: #e6e3da;
+  --border-strong: #d4d0c4;
+  --up: #c25b4b;      /* 涨：赭红，内敛不刺眼 */
+  --down: #6f8a6a;    /* 跌：青灰绿 */
+  --accent: #3d3d3a;  /* 主强调 = 墨色（替代朱砂红）*/
+  --accent-2: #2a2a28;
+  --accent-bg: #efeee9;
+  --cinnabar: #b04a3a;   /* 朱砂，仅印章/第一名等极小面积使用 */
+  --cinnabar-bg: #f6ece8;
+  --gold: #a8863c;
+  --gold-bg: #f3ecdb;
+  --warn: #a0803c;
+  --warn-bg: #f4eedd;
+  --radius: 10px;
+  --shadow: 0 2px 14px rgba(60, 55, 45, 0.06);
+  --shadow-hover: 0 6px 22px rgba(60, 55, 45, 0.12);
+  --font-display: "Ma Shan Zheng", "ZCOOL XiaoWei", "Noto Serif SC", "STKaiti", "KaiTi", serif;
   --font-body: "Noto Serif SC", "PingFang SC", "Microsoft YaHei", serif;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -39,8 +43,9 @@ body {
   font-family: var(--font-body);
   background: var(--bg);
   background-image:
-    radial-gradient(circle at 12% 8%, rgba(184,145,47,0.08) 0%, transparent 42%),
-    radial-gradient(circle at 88% 90%, rgba(176,58,46,0.06) 0%, transparent 45%);
+    radial-gradient(circle at 14% 6%, rgba(120,116,105,0.10) 0%, transparent 40%),
+    radial-gradient(circle at 86% 94%, rgba(120,116,105,0.08) 0%, transparent 42%),
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.35) 0%, transparent 70%);
   color: var(--text);
   font-size: 14px;
   line-height: 1.75;
@@ -52,18 +57,19 @@ body {
 /* 头部 */
 .header { padding: 26px 8px 16px; position: relative; }
 .header::after {
-  content: ""; display: block; height: 2px; margin-top: 16px;
-  background: linear-gradient(90deg, transparent, var(--gold) 20%, var(--gold) 80%, transparent);
-  opacity: 0.5;
+  content: ""; display: block; height: 1px; margin-top: 16px;
+  background: linear-gradient(90deg, transparent, var(--ink-3) 25%, var(--ink-3) 75%, transparent);
+  opacity: 0.45;
 }
 .header h1 {
   font-family: var(--font-display);
-  font-size: 28px; font-weight: 600; letter-spacing: 2px;
+  font-size: 28px; font-weight: 400; letter-spacing: 3px;
   color: var(--ink); position: relative; display: inline-block;
 }
 .header h1::before {
-  content: "◤"; color: var(--accent); font-size: 20px;
-  margin-right: 8px; opacity: 0.7;
+  content: ""; position: absolute; left: -14px; top: 50%; transform: translateY(-50%);
+  width: 4px; height: 22px; border-radius: 2px;
+  background: var(--cinnabar); opacity: 0.85;
 }
 .header .sub { color: var(--text-2); font-size: 13px; margin-top: 8px; letter-spacing: 1px; }
 .badge-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
@@ -84,13 +90,14 @@ body {
 }
 .card h2 {
   font-family: var(--font-display);
-  font-size: 17px; font-weight: 600; margin-bottom: 16px;
-  letter-spacing: 2px; color: var(--ink);
+  font-size: 17px; font-weight: 400; margin-bottom: 16px;
+  letter-spacing: 3px; color: var(--ink);
   padding-left: 12px; position: relative;
 }
 .card h2::before {
-  content: ""; position: absolute; left: 0; top: 3px; bottom: 3px;
-  width: 3px; border-radius: 2px; background: var(--accent);
+  content: ""; position: absolute; left: 0; top: 4px; bottom: 4px;
+  width: 2px; border-radius: 1px; background: var(--ink);
+  opacity: 0.7;
 }
 
 /* 等级输入区 */
@@ -110,7 +117,7 @@ body {
   border: 1px solid var(--border); border-radius: 10px; outline: none;
   background: var(--card); color: var(--text); transition: border-color .2s, box-shadow .2s;
 }
-.craft-input input[type=number]:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-bg); }
+.craft-input input[type=number]:focus { border-color: var(--ink-3); box-shadow: 0 0 0 3px var(--accent-bg); }
 .craft-input label.switch {
   display: flex; align-items: center; gap: 9px; font-size: 13px; color: var(--text-2); cursor: pointer;
   padding: 8px 0; margin-top: 2px;
@@ -131,7 +138,7 @@ body {
   transition: transform .25s; box-shadow: 0 1px 4px rgba(0,0,0,.2);
 }
 .craft-input label.switch input[type=checkbox]:checked + .toggle-track {
-  background: var(--accent-2);
+  background: var(--ink-2);
 }
 .craft-input label.switch input[type=checkbox]:checked + .toggle-track::after {
   transform: translateX(19px);
@@ -144,8 +151,8 @@ body {
   background: var(--card-2); cursor: pointer; font-size: 13px; color: var(--text);
   transition: all .2s; letter-spacing: 1px;
 }
-.btn:hover { border-color: var(--accent); color: var(--accent); }
-.btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn:hover { border-color: var(--ink-3); color: var(--ink); }
+.btn.active { background: var(--ink); border-color: var(--ink); color: #fff; }
 select.filter {
   padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border);
   background: var(--card-2); font-size: 13px; outline: none; color: var(--text);
@@ -160,7 +167,8 @@ select.filter {
 }
 .metric::before {
   content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-  background: linear-gradient(90deg, var(--accent), var(--gold));
+  background: linear-gradient(90deg, var(--ink-2), var(--ink-3), transparent);
+  opacity: 0.55;
 }
 .metric .label { font-size: 12px; color: var(--text-2); letter-spacing: 1px; }
 .metric .value { font-size: 24px; font-weight: 600; margin-top: 4px; font-variant-numeric: tabular-nums; }
@@ -182,9 +190,9 @@ select.filter {
   font-size: 13px; font-weight: 600; background: var(--bg); color: var(--text-2);
   font-family: var(--font-display);
 }
-.rank-num.top1 { background: var(--gold-bg); color: #a07a1f; box-shadow: inset 0 0 0 1px var(--gold); }
-.rank-num.top2 { background: #ecece8; color: #8a8a84; }
-.rank-num.top3 { background: var(--accent-bg); color: var(--accent-2); }
+.rank-num.top1 { background: var(--cinnabar); color: #fff; }
+.rank-num.top2 { background: #e8e6e0; color: var(--ink-3); }
+.rank-num.top3 { background: #ece6d8; color: #9a7a38; }
 .rank-item .name { font-weight: 600; font-size: 14px; flex: 1; letter-spacing: 0.5px; }
 .rank-item .craft-tag {
   font-size: 11px; padding: 3px 10px; border-radius: 6px; flex-shrink: 0;
@@ -201,9 +209,9 @@ select.filter {
 .rank-item .meta .liq-mid { color: var(--warn); }
 .rank-item .meta .liq-bad { color: var(--up); }
 .liq-tag { font-size: 11px; padding: 2px 8px; border-radius: 6px; }
-.liq-good { background: #e9efe4; color: #5f7d4f; }
-.liq-mid { background: #f3ecd9; color: #a07a1f; }
-.liq-bad { background: #f6e6e2; color: #b03a2e; }
+.liq-good { background: #edf1e9; color: #6f8a6a; }
+.liq-mid { background: #f3eedd; color: #a0803c; }
+.liq-bad { background: #f6ece8; color: #b04a3a; }
 
 /* 展开详情 */
 .detail {
@@ -291,11 +299,11 @@ select.filter {
 
 <script>
 const CRAFT_COLORS = {
-  cooking: '#5f7d4f',
-  medicine: '#6b8e8e',
-  tailoring: '#b03a2e',
-  founding: '#a87e2f',
-  furniture: '#7d6a9a',
+  cooking: '#6f8a6a',      // 青灰绿（竹青）
+  medicine: '#6b7f8e',     // 黛青（青黛）
+  tailoring: '#8a6a5c',    // 赭石（浅绛）
+  founding: '#a0803c',     // 藤黄赭
+  furniture: '#7d6a8a',    // 紫檀灰
 };
 const CRAFT_NAMES = {
   cooking: '烹饪', medicine: '制药', tailoring: '缝纫',
