@@ -283,6 +283,11 @@ select.filter {
 .quality-green { color: #667f61; background: #edf1e9; }
 .quality-blue { color: #64798c; background: #edf1f3; }
 .quality-purple { color: #756482; background: #f1edf2; }
+.stale-tag {
+  display: inline-block; padding: 2px 7px; border-radius: 5px; font-size: 11px;
+  color: #a07a2e; background: #f6efdd; border: 1px solid #d9c48a;
+  cursor: help; margin-left: 4px; white-space: nowrap;
+}
 .source-note {
   margin-top: 12px; padding: 10px 12px; border: 1px dashed var(--border-strong); border-radius: 9px;
   color: var(--text-2); font-size: 12px; line-height: 1.7;
@@ -731,6 +736,14 @@ function liquidityTag(count) {
   return { text: '稀少', cls: 'liq-bad' };
 }
 
+// 「回填」角标：该物品当前交易行无挂单，价格沿用上期
+function staleTag(ts) {
+  if (!ts) return '';
+  const d = new Date(ts * 1000);
+  const ds = `${d.getMonth()+1}月${d.getDate()}日`;
+  return `<span class="stale-tag" title="当前交易行暂无挂单，沿用上期价格（最近于 ${ds} 有挂单）">回填</span>`;
+}
+
 function renderBadges() {
   if (!DATA) return;
   const el = document.getElementById('badgeRow');
@@ -744,6 +757,9 @@ function renderBadges() {
     `可测算宝箱：${(DATA.chests || []).length} 种`,
     `手续费：${(DATA.fee_rate*100).toFixed(0)}%`,
   ];
+  if (DATA.stale_backfilled) {
+    badges.push(`暂无挂单回填：${DATA.stale_backfilled} 个（沿用上期价）`);
+  }
   badges.forEach(b => {
     const span = document.createElement('span');
     span.className = 'badge';
@@ -880,6 +896,7 @@ function renderList(rows) {
         <span>消耗精力 ${r.energy}</span>
         <span>单次净利 ${r.profit >= 0 ? '+' : ''}${fmtJin2(r.profit)} 金</span>
         <span class="${liq.cls}">流动性 ${liq.text}</span>
+        ${r.stale_count ? `<span class="stale-tag" title="有 ${r.stale_count} 项材料/产出当前无挂单，价格沿用上期">回填×${r.stale_count}</span>` : ''}
       </div>
       <div class="detail" data-id="${i}"></div>
     `;
@@ -899,11 +916,11 @@ function toggleDetail(container, r, i) {
 
   let matHtml = '';
   r.materials.forEach(m => {
-    matHtml += `<tr><td>${m.name}</td><td class="num">${m.count}</td><td class="num">${fmtJin(m.unit_price)}</td><td class="num">${fmtJin(m.cost)}</td></tr>`;
+    matHtml += `<tr><td>${m.name}${m.stale ? staleTag(m.last_seen_at) : ''}</td><td class="num">${m.count}</td><td class="num">${fmtJin(m.unit_price)}</td><td class="num">${fmtJin(m.cost)}</td></tr>`;
   });
   let outHtml = '';
   r.outputs.forEach(o => {
-    outHtml += `<tr><td>${o.name}</td><td class="num">${o.min}~${o.max}</td><td class="num">${fmtJin(o.unit_price)}</td><td class="num">${fmtJin(o.revenue)}</td></tr>`;
+    outHtml += `<tr><td>${o.name}${o.stale ? staleTag(o.last_seen_at) : ''}</td><td class="num">${o.min}~${o.max}</td><td class="num">${fmtJin(o.unit_price)}</td><td class="num">${fmtJin(o.revenue)}</td></tr>`;
   });
 
   detail.innerHTML = `
@@ -1077,7 +1094,7 @@ function renderDropTable(chest) {
   const fee = 1 - (DATA.fee_rate || 0);
   el.innerHTML = chest.drops.map(d => `
     <tr>
-      <td>${d.name}</td>
+      <td>${d.name}${d.stale ? staleTag(d.last_seen_at) : ''}</td>
       <td><span class="quality-tag quality-${d.quality}">${d.quality_name}</span></td>
       <td class="num">${fmtPercent(d.probability)}</td>
       <td class="num">${fmtJin4(d.unit_price)} 金</td>
@@ -1188,7 +1205,7 @@ function renderGatherList() {
       const isBest = bestItemId && o.item_id === bestItemId;
       return `
         <div class="gather-output-row${isBest ? ' best' : ''}" data-item="${o.item_id}">
-          <div>${o.name}${isBest ? ' <span class="quality-tag quality-cinnabar">推荐</span>' : ''}</div>
+          <div>${o.name}${o.stale ? staleTag(o.last_seen_at) : ''}${isBest ? ' <span class="quality-tag quality-cinnabar">推荐</span>' : ''}</div>
           <div class="num"><input type="number" min="0" step="1" value="${o.count}" data-item="${o.item_id}" aria-label="${o.name} 产出数量"></div>
           <div class="num">${fmtJin4(o.unit_price)} 金</div>
           <div class="num">${fmtJin4(o.revenue * fee)} 金</div>
